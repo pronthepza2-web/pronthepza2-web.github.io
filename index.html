@@ -3,9 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NOT YOUR XP! — แพลตฟอร์มเกมส์อินดี้</title>
+<title>เกมส์อินดี้ — แพลตฟอร์มเกมส์อินดี้</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
 <style>
 :root {
   --bg: #080810;
@@ -657,7 +661,7 @@ textarea { resize: vertical; min-height: 90px; }
 <nav>
   <div class="logo" onclick="showView('browse')">
     <div class="logo-mark">!</div>
-    <div class="logo-text">NOT YOUR <span class="accent">XP!</span></div>
+    <div class="logo-text"><span class="accent">เกมส์</span>อินดี้</div>
   </div>
   <div class="nav-tabs">
     <button class="nav-tab active" id="tab-browse" onclick="showView('browse')">🕹️ เรียกดู</button>
@@ -992,6 +996,19 @@ textarea { resize: vertical; min-height: 90px; }
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
+// ── FIREBASE SETUP ──
+const firebaseConfig = {
+  apiKey: "AIzaSyAyXAGHzcxqEYW5hLcN-fTHPrX6x6_0LkK",
+  authDomain: "not-your-xp-db.firebaseapp.com",
+  projectId: "not-your-xp-db",
+  storageBucket: "not-your-xp-db.firebasestorage.app",
+  messagingSenderId: "798248511193",
+  appId: "1:798248511193:web:2c4069e89b4cc41a4910c8",
+  measurementId: "G-P7N41RC8QS"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 // ── STATE ──
 let allGames = [];
 let currentFilterTag = 'all';
@@ -1005,16 +1022,20 @@ let slipDataUrl = null;
 let qrInstance = null;
 let gameFileData = null, gameFileMeta = null;
 
-// ── FIXED STORAGE FOR WEB BROWSER ──
+// ── DATABASE FOR WEB BROWSER ──
 async function saveGames(games) {
-  try { localStorage.setItem('nyx-games', JSON.stringify(games)); } catch(e) {}
+  // ฟังก์ชันเดิมใช้บันทึกก้อนใหญ่ ตอนนี้ใช้ Firebase ไม่จำเป็นต้องทำงานแล้ว (คงไว้ไม่ให้โค้ดเก่าพัง)
 }
 async function loadGames() {
   try {
-    const r = localStorage.getItem('nyx-games');
-    if (r) return JSON.parse(r);
-  } catch(e) {}
-  return getSeedGames();
+    const snapshot = await db.collection('games').orderBy('uploadedAt', 'desc').get();
+    const games = [];
+    snapshot.forEach(doc => { games.push({ id: doc.id, ...doc.data() }); });
+    return games;
+  } catch(e) {
+    console.error(e);
+    return [];
+  }
 }
 async function loadMyGameIds() {
   try {
@@ -1118,7 +1139,7 @@ function openDetail(id) {
   const g = allGames.find(x=>x.id===id);
   if (!g) return;
   g.plays++;
-  saveGames(allGames);
+  db.collection('games').doc(g.id).update({ plays: g.plays }).catch(e=>{});
   const isPlayable = g.platform.includes('Web') || g.gameUrl || g.fileType === 'html';
   const isOwned = ownedGameIds.has(g.id) || myGameIds.has(g.id);
   const isFree = g.priceNum === 0;
@@ -1260,7 +1281,7 @@ async function confirmPayment() {
   ownedGameIds.add(g.id);
   await saveOwnedGameIds();
   g.sales = (g.sales||0) + 1;
-  await saveGames(allGames);
+  db.collection('games').doc(g.id).update({ sales: g.sales }).catch(e=>{});
   closePaymentModal();
   updateLibraryBadge();
   showToast(`🎮 "${g.title}" เพิ่มเข้าคลังแล้ว!`, 'success');
@@ -1455,7 +1476,6 @@ async function submitGame() {
 
   const isHtml = gameFileMeta && (gameFileMeta.name.endsWith('.html')||gameFileMeta.type==='text/html');
   const game = {
-    id: 'game-'+Date.now()+'-'+Math.random().toString(36).slice(2,8),
     title, dev, desc,
     emoji: emoji.slice(0,2)||'🎮',
     cover: coverDataUrl,
@@ -1470,22 +1490,29 @@ async function submitGame() {
     uploadedAt: Date.now(),
   };
 
-  allGames.unshift(game);
-  myGameIds.add(game.id);
-  ownedGameIds.add(game.id);
-  progressFill.style.width='100%'; progressText.textContent='100%';
-  await saveGames(allGames);
-  await saveMyGameIds();
-  await saveOwnedGameIds();
-  await new Promise(r=>setTimeout(r,300));
-  btn.disabled=false; btn.innerHTML='🚀 เผยแพร่เกมส์';
-  progressBar.style.display='none'; progressFill.style.width='0%';
-  showToast(`✅ "${title}" เผยแพร่เรียบร้อย!`,'success');
-  updateGameCountBadge();
-  updateLibraryBadge();
-  clearForm();
-  showView('browse');
-  filterGames();
+  try {
+    const docRef = await db.collection('games').add(game);
+    game.id = docRef.id;
+
+    allGames.unshift(game);
+    myGameIds.add(game.id);
+    ownedGameIds.add(game.id);
+    progressFill.style.width='100%'; progressText.textContent='100%';
+    await saveMyGameIds();
+    await saveOwnedGameIds();
+    await new Promise(r=>setTimeout(r,300));
+    btn.disabled=false; btn.innerHTML='🚀 เผยแพร่เกมส์';
+    progressBar.style.display='none'; progressFill.style.width='0%';
+    showToast(`✅ "${title}" เผยแพร่เรียบร้อย!`,'success');
+    updateGameCountBadge();
+    updateLibraryBadge();
+    clearForm();
+    showView('browse');
+    filterGames();
+  } catch (error) {
+    showToast('❌ เกิดข้อผิดพลาดในการบันทึกข้อมูล', 'error');
+    btn.disabled = false; btn.innerHTML = '🚀 เผยแพร่เกมส์';
+  }
 }
 
 function clearForm() {
@@ -1552,11 +1579,16 @@ function renderMyGames() {
 
 async function deleteGame(id) {
   if (!confirm('ลบเกมส์นี้?')) return;
-  allGames = allGames.filter(g=>g.id!==id);
-  myGameIds.delete(id);
-  await saveGames(allGames); await saveMyGameIds();
-  renderMyGames(); filterGames(); updateGameCountBadge();
-  showToast('🗑️ ลบเกมส์เรียบร้อย','success');
+  try {
+    await db.collection('games').doc(id).delete();
+    allGames = allGames.filter(g=>g.id!==id);
+    myGameIds.delete(id);
+    await saveMyGameIds();
+    renderMyGames(); filterGames(); updateGameCountBadge();
+    showToast('🗑️ ลบเกมส์เรียบร้อย','success');
+  } catch(e) {
+    showToast('❌ ไม่สามารถลบข้อมูลได้', 'error');
+  }
 }
 
 // ── UTILS ──
