@@ -3,11 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fantasy Realm - แพลตฟอร์มนิยายแฟนตาซีระดับพรีเมียม</title>
+    <title>Fantasy Realm V2 - อาณาจักรนิยายใหม่</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
     <style>
         /* ========================================= */
-        /* 🎨 Theme & Colors */
+        /* 🎨 THEME & UI DESIGN */
         /* ========================================= */
         :root { 
             --main-bg: #07070a; --card-bg: #111116; --text: #dcdce6; 
@@ -15,596 +21,301 @@
             --danger: #ff4757; --success: #2ed573; --border: #232332;
             --glow: rgba(229, 181, 57, 0.4);
         }
-        body.theme-sepia { --main-bg: #f4ecd8; --card-bg: #e8dcb8; --text: #4a3b32; --border: #d4c5a9; --glow: rgba(0,0,0,0.1); }
-        body.theme-light { --main-bg: #f5f5f5; --card-bg: #ffffff; --text: #222222; --border: #dddddd; --glow: rgba(0,0,0,0.1); }
-
+        
         body { 
-            font-family: 'Sarabun', sans-serif; 
-            background: var(--main-bg); 
+            font-family: 'Sarabun', sans-serif; background: var(--main-bg); 
             background-image: radial-gradient(circle at 50% 0%, #131320 0%, var(--main-bg) 80%);
-            color: var(--text); margin: 0; padding: 0; line-height: 1.6; 
-            min-height: 100vh; overflow-x: hidden;
+            color: var(--text); margin: 0; padding: 0; line-height: 1.6; min-height: 100vh; overflow-x: hidden;
         }
+
         a { text-decoration: none; color: inherit; cursor: pointer; }
         * { box-sizing: border-box; }
 
-        /* ========================================= */
-        /* 💎 Navbar */
-        /* ========================================= */
+        /* Navigation */
         .navbar { 
-            background: #0a0a0f; border-bottom: 2px solid var(--border); 
+            background: rgba(10, 10, 15, 0.95); border-bottom: 2px solid var(--border); 
             padding: 12px 5%; display: flex; justify-content: space-between; align-items: center; 
             position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
         .logo { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 700; color: var(--accent); cursor: pointer; text-shadow: 0 0 10px var(--glow); }
-        .nav-actions { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
-        
-        .btn { padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: 0.3s; white-space: nowrap; }
+        .nav-actions { display: flex; gap: 15px; align-items: center; }
+
+        .btn { padding: 8px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: 0.3s; }
         .btn-primary { background: linear-gradient(45deg, var(--accent), #f1c40f); color: #000; box-shadow: 0 0 10px var(--glow); }
-        .btn-primary:hover { box-shadow: 0 0 20px var(--glow); transform: translateY(-2px); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 20px var(--glow); }
         .btn-outline { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
-        .btn-outline:hover { background: rgba(229, 181, 57, 0.1); box-shadow: 0 0 10px var(--glow); }
 
-        .bell-icon { position: relative; font-size: 1.3rem; cursor: pointer; margin-right: 15px; transition: 0.3s; }
-        .bell-icon:hover { transform: scale(1.1); text-shadow: 0 0 10px var(--glow); }
-        .bell-badge { position: absolute; top: -5px; right: -8px; background: var(--danger); color: white; font-size: 0.65rem; padding: 2px 5px; border-radius: 50%; font-weight: bold; border: 2px solid var(--main-bg); }
+        .user-profile { display: flex; align-items: center; gap: 10px; }
+        .user-avatar { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--accent); }
 
-        /* ========================================= */
-        /* โครงสร้างหน้า (Views) */
-        /* ========================================= */
-        .view-section { display: none; padding: 30px 5%; max-width: 1300px; margin: auto; animation: fadeIn 0.4s ease-out; }
+        /* Layout Views */
+        .view-section { display: none; padding: 40px 5%; max-width: 1300px; margin: auto; animation: fadeIn 0.4s ease; }
         .view-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .home-grid { display: grid; grid-template-columns: 3fr 1fr; gap: 25px; margin-bottom: 40px;}
+        .home-grid { display: grid; grid-template-columns: 3fr 1fr; gap: 30px; }
+        @media (max-width: 900px) { .home-grid { grid-template-columns: 1fr; } }
+
+        .section-title { font-size: 1.6rem; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-top: 0; }
         
-        .section-title { font-size: 1.5rem; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; justify-content: space-between; margin-top: 0; align-items: flex-end;}
-        .section-title span { font-size: 0.9rem; color: var(--accent); font-weight: normal; cursor: pointer;}
-        .section-title span:hover { text-decoration: underline; }
+        .novel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        .novel-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; cursor: pointer; transition: 0.3s; }
+        .novel-card:hover { transform: translateY(-8px); border-color: var(--accent); box-shadow: 0 10px 25px var(--glow); }
+        .cover { height: 260px; background: #222; display: flex; align-items: center; justify-content: center; color: #444; font-weight: bold; }
+        .info { padding: 15px; }
 
-        .novel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; margin-bottom: 30px;}
-        .novel-card { background: linear-gradient(145deg, #13131a, #0d0d12); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; cursor: pointer; transition: 0.3s; position: relative;}
-        .novel-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 20px var(--glow); }
-        .cover { height: 240px; background: #222; display: flex; align-items: center; justify-content: center; position: relative; color: #555; }
-        .badge-18 { position: absolute; top: 8px; right: 8px; background: var(--danger); color: white; padding: 3px 8px; font-size: 0.7rem; border-radius: 4px; font-weight: bold; }
-        .badge-end { position: absolute; top: 8px; left: 8px; background: var(--success); color: #000; padding: 3px 8px; font-size: 0.7rem; border-radius: 4px; font-weight: bold; }
-        .info { padding: 12px; }
-        .info h4 { margin: 0 0 6px 0; color: #fff; font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sidebar-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 25px; }
+        .sidebar-item { padding: 12px 0; border-bottom: 1px solid var(--border); cursor: pointer; display: block; }
+        .sidebar-item:hover { color: var(--accent); padding-left: 8px; }
 
-        .sidebar-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 25px; }
-        .ad-space { background: #15151a; border: 1px dashed #444; display: flex; align-items: center; justify-content: center; color: #666; text-align: center; border-radius: 10px; padding: 20px; }
+        /* Writer Studio */
+        .editor-container { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+        .editor-toolbar { background: #0a0a0f; border-bottom: 1px solid var(--border); padding: 15px; display: flex; gap: 8px; flex-wrap: wrap; }
+        .writer-editor { width: 100%; min-height: 500px; background: #0a0a0f; color: #fff; padding: 30px; outline: none; overflow-y: auto; font-size: 1.15rem; }
+        .writer-editor[placeholder]:empty:before { content: attr(placeholder); color: #555; }
+        .toolbar-btn { background: #1a1a24; color: #aaa; border: 1px solid #333; border-radius: 4px; padding: 6px 12px; cursor: pointer; font-weight: bold; }
+        .toolbar-btn:hover { background: var(--accent); color: #000; }
 
-        /* 🌟 คลาสใหม่สำหรับทำให้ Sidebar คลิกได้ */
-        .sidebar-list-item { 
-            padding: 10px 0; 
-            border-bottom: 1px solid var(--border); 
-            cursor: pointer; 
-            transition: all 0.2s ease;
-            font-size: 0.95rem;
-            display: block;
-        }
-        .sidebar-list-item:last-child { border-bottom: none; }
-        .sidebar-list-item:hover { 
-            color: var(--accent); 
-            padding-left: 8px; /* เอฟเฟกต์เลื่อนขวาเวลานำเมาส์ไปชี้ */
-        }
-
-        /* ========================================= */
-        /* 🌟 แบนเนอร์ CTA & FAQ & Footer */
-        /* ========================================= */
-        .cta-banner { background: linear-gradient(135deg, rgba(229, 181, 57, 0.15), #0a0a0f); border: 1px solid var(--accent); border-radius: 12px; padding: 40px 20px; text-align: center; margin: 50px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .cta-banner h2 { color: var(--accent); margin-top: 0; font-size: 2rem; font-family: 'Cinzel', serif; }
-        .cta-banner p { color: #aaa; font-size: 1.1rem; margin-bottom: 20px; max-width: 600px; margin-left: auto; margin-right: auto; }
-
-        .faq-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
-        .faq-card { background: var(--card-bg); border: 1px solid var(--border); padding: 20px; border-radius: 10px; transition: 0.3s; }
-        .faq-card:hover { border-color: #555; transform: translateY(-3px); }
-        .faq-card h4 { color: var(--accent); margin-top: 0; display: flex; align-items: center; gap: 10px;}
-        .faq-card p { color: #aaa; font-size: 0.95rem; margin-bottom: 0;}
-
-        .footer { background: #050508; border-top: 1px solid var(--border); padding: 50px 5% 20px; margin-top: 60px; }
-        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; max-width: 1300px; margin: auto; }
-        .footer-col h3 { color: var(--accent); font-family: 'Cinzel', serif; margin-top: 0; }
-        .footer-col a { display: block; color: #888; margin-bottom: 10px; transition: 0.2s; font-size: 0.95rem; }
-        .footer-col a:hover { color: var(--text); padding-left: 5px; }
-        .footer-bottom { text-align: center; color: #555; padding-top: 30px; margin-top: 30px; border-top: 1px solid #111; font-size: 0.85rem; }
-
-        /* ========================================= */
-        /* Reader UI */
-        /* ========================================= */
-        .reader-container { max-width: 800px; margin: auto; }
-        .reader-toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; background: var(--card-bg); padding: 15px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 25px; gap: 10px; }
-        .toolbar-group { display: flex; gap: 10px; align-items: center; }
-        .icon-btn { background: #222; color: #fff; border: 1px solid #444; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 1rem; transition: 0.2s; }
-        .icon-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); }
-        .reader-content-box { background: var(--card-bg); padding: 40px; border-radius: 10px; border-top: 4px solid var(--accent); word-wrap: break-word; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .reader-text { font-size: 18px; line-height: 1.8; margin-top: 20px; transition: font-size 0.2s; }
-        .reader-text img { max-width: 100%; height: auto; border-radius: 8px; margin: 10px 0; }
-        .donate-box { background: #0a0a0f; border: 1px solid var(--accent); padding: 25px; border-radius: 10px; text-align: center; margin-top: 40px; }
-
-        /* ========================================= */
-        /* ชั้นหนังสือ (Bookshelf) */
-        /* ========================================= */
-        .bookshelf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; margin-top: 20px; }
-        .progress-bar { width: 100%; background: #333; height: 5px; border-radius: 5px; margin-top: 10px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--accent); box-shadow: 0 0 5px var(--accent); }
-
-        /* ========================================= */
-        /* Studio หลังบ้าน & 🛠️ เครื่องมือนักเขียน */
-        /* ========================================= */
-        .studio-layout { display: grid; grid-template-columns: 250px 1fr; gap: 25px; background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border); min-height: 600px; margin-top: 20px; }
-        .studio-menu { border-right: 1px solid var(--border); padding: 20px 0; }
-        .studio-menu div { padding: 15px 20px; cursor: pointer; color: #888; transition: 0.3s; border-left: 3px solid transparent; font-weight: 600; }
-        .studio-menu div:hover, .studio-menu div.active { background: rgba(229, 181, 57, 0.1); color: var(--accent); border-left-color: var(--accent); }
-        .studio-content { padding: 30px; width: 100%; overflow: hidden; }
-        .studio-tab { display: none; }
-        .studio-tab.active { display: block; animation: fadeIn 0.3s; }
+        /* Reader */
+        .reader-box { max-width: 850px; margin: 20px auto; background: var(--card-bg); padding: 50px; border-radius: 12px; border-top: 5px solid var(--accent); box-shadow: 0 15px 50px rgba(0,0,0,0.7); }
         
-        .form-group { margin-bottom: 20px; width: 100%; }
-        .form-group label { display: block; margin-bottom: 8px; color: #aaa; font-size: 0.95rem; }
-        .form-control { width: 100%; padding: 12px; background: #0a0a0f; border: 1px solid var(--border); color: #fff; border-radius: 6px; font-family: inherit; transition: 0.3s; }
-        .form-control:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 8px var(--glow); }
-
-        /* แถบเครื่องมือเต็มรูปแบบ (Full Toolbar) */
-        .editor-toolbar { background: #0a0a0f; border: 1px solid var(--border); border-bottom: none; border-radius: 6px 6px 0 0; padding: 12px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-        .editor-btn { background: #1a1a24; color: #aaa; border: 1px solid #333; border-radius: 4px; padding: 6px 10px; cursor: pointer; font-family: inherit; font-weight: bold; transition: 0.2s; font-size: 0.9rem;}
-        .editor-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); }
-        
-        .toolbar-divider { width: 1px; height: 24px; background: var(--border); margin: 0 5px; }
-        .editor-select { background: #1a1a24; color: #aaa; border: 1px solid #333; border-radius: 4px; padding: 6px; cursor: pointer; font-family: inherit; outline: none; }
-        .editor-select:hover { border-color: var(--accent); }
-        .editor-color { padding: 0; width: 28px; height: 28px; border: 1px solid #333; border-radius: 4px; cursor: pointer; background: #1a1a24; }
-
-        .writer-editor { width: 100%; min-height: 450px; background: #0a0a0f; color: #fff; border: 1px solid var(--border); border-radius: 0 0 6px 6px; padding: 20px; font-size: 1.1rem; font-family: inherit; line-height: 1.7; overflow-y: auto; outline: none; transition: 0.3s; }
-        .writer-editor:focus { border-color: var(--accent); box-shadow: 0 0 10px var(--glow); }
-        .writer-editor[placeholder]:empty:before { content: attr(placeholder); color: #555; pointer-events: none; display: block; }
-        .writer-editor img { max-width: 100%; height: auto; border-radius: 8px; margin: 10px 0; }
-
-        /* ========================================= */
-        /* Modal */
-        /* ========================================= */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-        .modal-box { background: var(--card-bg); width: 90%; max-width: 420px; padding: 35px; border-radius: 12px; border: 1px solid var(--border); position: relative; }
-        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #666; }
-        .close-btn:hover { color: var(--danger); }
-
-        @media (max-width: 900px) {
-            .home-grid { grid-template-columns: 1fr; }
-            .studio-layout { grid-template-columns: 1fr; }
-            .studio-menu { border-right: none; border-bottom: 1px solid var(--border); display: flex; overflow-x: auto; white-space: nowrap; padding: 10px; }
-            .studio-menu div { border-left: none; border-bottom: 3px solid transparent; padding: 10px 15px; }
-        }
+        .footer { background: #050508; border-top: 1px solid var(--border); padding: 60px 5%; margin-top: 80px; text-align: center; color: #555; }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
-        <div class="logo" onclick="switchView('home-view')">Fantasy Realm</div>
-        <div class="nav-actions" id="guest-nav">
-            <button class="btn btn-outline" onclick="openModal('loginModal')">เข้าสู่ระบบ</button>
-            <button class="btn btn-primary" onclick="openModal('registerModal')">สมัครสมาชิก</button>
-        </div>
-        <div class="nav-actions" id="user-nav" style="display: none;">
-            <div class="bell-icon" onclick="alert('คุณมี 1 การแจ้งเตือน: นิยายที่คุณติดตามอัปเดตตอนใหม่แล้ว!')">🔔<span class="bell-badge">1</span></div>
-            <button class="btn btn-outline" onclick="switchView('bookshelf-view')" style="border-color: rgba(255,255,255,0.2); color: #fff;">📚 ชั้นหนังสือ</button>
-            <button class="btn btn-primary" onclick="switchView('studio-view')">จัดการนิยาย (Studio)</button>
-            <span style="color: var(--accent); font-weight: 600;">👑 <span id="display-name">นักเขียน</span></span>
-            <button class="btn btn-outline" onclick="logout()" style="border: none; color: #888; padding: 8px;">[ออก]</button>
+        <div class="logo" onclick="switchView('home-view')">Fantasy Realm V2</div>
+        <div class="nav-actions" id="auth-ui">
+            <button class="btn btn-primary" onclick="loginWithGoogle()">🔑 ล็อกอิน Gmail จริง</button>
         </div>
     </nav>
 
     <div id="home-view" class="view-section active">
-        
-        <div id="continue-reading-section" style="display: none; background: #0a0a0f; border-left: 4px solid var(--accent); padding: 18px 25px; border-radius: 8px; margin-bottom: 25px; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-            <div>
-                <span style="color: #888; font-size: 0.85rem;">อ่านค้างไว้:</span><br>
-                <strong id="last-read-title" style="color: var(--accent); font-size: 1.15rem;">-</strong>
-            </div>
+        <div id="reading-bar" style="display: none; background: #0a0a0f; border-left: 4px solid var(--accent); padding: 15px 25px; border-radius: 8px; margin-bottom: 30px; justify-content: space-between; align-items: center;">
+            <div><span style="color: #666; font-size: 0.8rem;">กำลังอ่านค้างไว้:</span><br><strong id="reading-title" style="color: var(--accent);"></strong></div>
             <button class="btn btn-primary" onclick="resumeReading()">อ่านต่อ ▶</button>
         </div>
 
         <div class="home-grid">
             <div>
-                <h2 class="section-title">🔥 นิยายมาแรงสัปดาห์นี้ <span>ดูทั้งหมด ></span></h2>
-                <div class="novel-grid">
-                    <div class="novel-card" onclick="openReader('ราชันย์เวทมนตร์', 'ตอนที่ 15: ตื่นรู้', false)">
-                        <div class="cover">[รูปปก]</div>
-                        <div class="info"><h4>ราชันย์เวทมนตร์</h4><div style="font-size: 0.8rem; color: #aaa; display: flex; justify-content: space-between;"><span>👁️ 120K</span> <span style="color:var(--accent)">⭐ 4.9</span></div></div>
-                    </div>
-                    <div class="novel-card" onclick="openReader('ศึกสายเลือดมังกร', 'ตอนที่ 8: อาบเลือด', true)">
-                        <div class="cover"><span class="badge-18">18+</span>[รูปปก]</div>
-                        <div class="info"><h4>ศึกสายเลือดมังกร</h4><div style="font-size: 0.8rem; color: #aaa; display: flex; justify-content: space-between;"><span>👁️ 85K</span> <span style="color:var(--accent)">⭐ 4.7</span></div></div>
-                    </div>
-                    <div class="novel-card" onclick="openReader('ระบบสร้างเมือง', 'ตอนที่ 12: เริ่มก่อสร้าง', false)">
-                        <div class="cover">[รูปปก]</div>
-                        <div class="info"><h4>ระบบสร้างเมือง</h4><div style="font-size: 0.8rem; color: #aaa; display: flex; justify-content: space-between;"><span>👁️ 50K</span> <span style="color:var(--accent)">⭐ 4.5</span></div></div>
-                    </div>
-                </div>
-
-                <h2 class="section-title" style="margin-top: 40px;">💎 บรรณาธิการแนะนำ <span>ดูทั้งหมด ></span></h2>
-                <div class="novel-grid">
-                    <div class="novel-card" onclick="openReader('จอมเวทไร้เงา', 'ตอนที่ 1', false)">
-                        <div class="cover">[รูปปก]</div>
-                        <div class="info"><h4>จอมเวทไร้เงา</h4><div style="font-size: 0.8rem; color: #aaa;">พล็อตเรื่องสุดแหวกแนว แนะนำ!</div></div>
-                    </div>
-                    <div class="novel-card">
-                        <div class="cover"><span class="badge-18">18+</span>[รูปปก]</div>
-                        <div class="info"><h4>ตำนานบุตรแห่งซาตาน</h4><div style="font-size: 0.8rem; color: #aaa;">ดาร์กแฟนตาซีระดับตำนาน</div></div>
-                    </div>
-                </div>
-
-                <h2 class="section-title" style="margin-top: 40px;">✅ นิยายจบแล้ว (อ่านรวดเดียว) <span>ดูทั้งหมด ></span></h2>
-                <div class="novel-grid">
-                    <div class="novel-card">
-                        <div class="cover"><span class="badge-end">จบแล้ว</span>[รูปปก]</div>
-                        <div class="info"><h4>พลิกชะตาสวรรค์</h4><div style="font-size: 0.8rem; color: #aaa;">จำนวน 150 ตอน</div></div>
-                    </div>
-                    <div class="novel-card">
-                        <div class="cover"><span class="badge-end">จบแล้ว</span>[รูปปก]</div>
-                        <div class="info"><h4>เจ้าหญิงสายรุ้ง</h4><div style="font-size: 0.8rem; color: #aaa;">จำนวน 85 ตอน</div></div>
-                    </div>
+                <h2 class="section-title">✨ ตำนานบทใหม่ <span>(ข้อมูลจริง)</span></h2>
+                <div class="novel-grid" id="novel-list">
+                    <p style="color: #444; padding: 20px;">กำลังเปิดหอสมุด...</p>
                 </div>
             </div>
-
             <div>
                 <div class="sidebar-box">
-                    <h3 style="margin-top: 0; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 12px;">🏆 Top 3 ประจำวัน</h3>
-                    <div class="sidebar-list-item" onclick="openReader('ราชันย์เวทมนตร์', 'ตอนที่ 15', false)">
-                        <strong style="color: #ffd700;">1.</strong> ราชันย์เวทมนตร์
-                    </div>
-                    <div class="sidebar-list-item" onclick="openReader('ระบบสร้างดันเจี้ยน', 'ตอนที่ 22', false)">
-                        <strong style="color: #c0c0c0;">2.</strong> ระบบสร้างดันเจี้ยน
-                    </div>
-                    <div class="sidebar-list-item" onclick="openReader('เกิดใหม่เป็นตัวร้าย', 'ตอนที่ 8', false)">
-                        <strong style="color: #cd7f32;">3.</strong> เกิดใหม่เป็นตัวร้าย
-                    </div>
+                    <h3 style="color: var(--accent); margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 10px;">🏆 อันดับตำนาน</h3>
+                    <div id="ranking-list"></div>
                 </div>
-
                 <div class="sidebar-box">
-                    <h3 style="margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 12px;">⏱️ อัปเดตล่าสุด</h3>
-                    <div class="sidebar-list-item" onclick="openReader('อัศวินศักดิ์สิทธิ์', 'ตอนที่ 42', false)">
-                        [10:45] อัศวินศักดิ์สิทธิ์ - ตอนที่ 42
-                    </div>
-                    <div class="sidebar-list-item" onclick="openReader('ดินแดนคนบาป', 'ตอนที่ 5', true)">
-                        [10:30] ดินแดนคนบาป - ตอนที่ 5 <span style="color: var(--danger); font-size: 0.7rem; border: 1px solid var(--danger); padding: 1px 3px; border-radius: 3px; margin-left: 5px;">18+</span>
-                    </div>
-                    <div class="sidebar-list-item" onclick="openReader('ระบบสร้างเมือง', 'ตอนที่ 12', false)">
-                        [09:15] ระบบสร้างเมือง - ตอนที่ 12
-                    </div>
-                </div>
-                
-                <div class="ad-space" style="height: 300px;">[พื้นที่โฆษณา Banner]</div>
-            </div>
-        </div>
-
-        <div class="cta-banner">
-            <h2>เขียนจินตนาการของคุณให้เป็นจริง</h2>
-            <p>Fantasy Realm สนับสนุนนักเขียนอย่างเต็มรูปแบบ คุณคุมลิขสิทธิ์ 100% และรับรายได้จากนักอ่านโดยตรงไม่หักเปอร์เซ็นต์ เริ่มต้นสร้างฐานแฟนคลับของคุณได้เลยตั้งแต่วันนี้</p>
-            <button class="btn btn-primary" style="padding: 12px 30px; font-size: 1.1rem;" onclick="openModal('registerModal')">เริ่มเขียนนิยายเลยตอนนี้</button>
-        </div>
-
-        <h2 class="section-title">💡 คำถามที่พบบ่อย (Q&A)</h2>
-        <div class="faq-grid">
-            <div class="faq-card">
-                <h4>Q: แพลตฟอร์มหักส่วนแบ่งกี่เปอร์เซ็นต์?</h4>
-                <p>A: <b>0% ครับ!</b> เราเป็นเพียงพื้นที่สื่อกลาง นักอ่านสามารถสแกน QR Code หรือโอนผ่านลิงก์เข้ากระเป๋านักเขียนได้โดยตรงเต็มจำนวน</p>
-            </div>
-            <div class="faq-card">
-                <h4>Q: ลิขสิทธิ์นิยายเป็นของใคร?</h4>
-                <p>A: <b>เป็นของนักเขียน 100%</b> คุณสามารถลบ แก้ไข หรือนำนิยายไปตีพิมพ์กับสำนักพิมพ์อื่นได้อย่างอิสระ ไม่มีข้อผูกมัดใดๆ</p>
-            </div>
-            <div class="faq-card">
-                <h4>Q: มีนิยายเรท 18+ ลงได้ไหม?</h4>
-                <p>A: <b>ลงได้ครับ</b> แต่ทางแพลตฟอร์มมีกฎระเบียบที่เคร่งครัดว่านักเขียน "ต้องติดป้ายเตือน 18+" เสมอ เพื่อปกป้องเยาวชนและผู้ใช้ท่านอื่น</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="reader-view" class="view-section">
-        <div class="reader-container">
-            <button class="btn btn-outline" onclick="switchView('home-view')" style="margin-bottom: 20px;">⬅ กลับหน้าหลัก</button>
-            <div class="reader-toolbar">
-                <div class="toolbar-group">
-                    <button class="icon-btn" onclick="changeFontSize(-2)">A-</button>
-                    <button class="icon-btn" onclick="changeFontSize(2)">A+</button>
-                </div>
-                <button class="btn btn-outline" style="border-radius: 20px; font-size: 0.9rem;" onclick="addToBookshelf()">❤️ เก็บเข้าชั้นหนังสือ</button>
-                <div class="toolbar-group">
-                    <button class="icon-btn" onclick="setTheme('dark')" title="โหมดมืด">🌙</button>
-                    <button class="icon-btn" style="background: #e8dcb8; color:#000;" onclick="setTheme('sepia')" title="โหมดถนอมสายตา">📜</button>
-                    <button class="icon-btn" style="background: #fff; color:#000;" onclick="setTheme('light')" title="โหมดสว่าง">☀️</button>
-                </div>
-            </div>
-            <div class="reader-content-box">
-                <h2 id="reader-title" style="color: var(--accent); text-align: center; margin-top: 0; font-family: 'Cinzel', serif;">ชื่อเรื่อง - ตอนที่...</h2>
-                <div id="reader-content" class="reader-text"><p>เนื้อหาจำลอง</p></div>
-                <div class="donate-box">
-                    <h3 style="color: var(--accent); margin-top: 0;">💖 สนับสนุนนักเขียนโดยตรง</h3>
-                    <p style="font-size: 0.95rem; color: #aaa;">รายได้ 100% เข้ากระเป๋านักเขียน</p>
-                    <button class="btn btn-primary" onclick="alert('แสดง QR Code โดเนท')">สแกน QR Code</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="bookshelf-view" class="view-section">
-        <h2 style="color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 10px;">📚 ชั้นหนังสือของฉัน</h2>
-        <div class="bookshelf-grid" id="my-books-container">
-            <div class="novel-card" onclick="openReader('ราชันย์เวทมนตร์', 'ตอนที่ 15: ตื่นรู้', false)">
-                <div class="cover" style="height: 160px;">[รูปหน้าปก]</div>
-                <div class="info">
-                    <h4 style="font-size: 0.95rem;">ราชันย์เวทมนตร์</h4>
-                    <div style="font-size: 0.75rem; color: #aaa;">อ่านถึง: ตอนที่ 15 / 50</div>
-                    <div class="progress-bar"><div class="progress-fill" style="width: 30%;"></div></div>
+                    <h3 style="margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 10px;">⏱️ อัปเดตล่าสุด</h3>
+                    <div id="updates-list"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <div id="studio-view" class="view-section">
-        <h2 style="color: var(--accent); margin-top: 0;">⚙️ ระบบจัดการหลังบ้าน</h2>
-        <div class="studio-layout">
-            <div class="studio-menu">
-                <div class="active" onclick="switchStudioTab('tab-write', this)">✍️ ลงตอนใหม่</div>
-                <div onclick="switchStudioTab('tab-novels', this)">📚 นิยายของฉัน</div>
-                <div onclick="switchStudioTab('tab-money', this)">💰 ช่องทางรับเงิน</div>
+        <h2 style="color: var(--accent);">✍️ จารึกตำนานใหม่</h2>
+        <input type="text" id="post-title" style="width: 100%; padding: 15px; background: #0a0a0f; border: 1px solid var(--border); border-radius: 8px; color: white; margin-bottom: 20px; font-size: 1.2rem; outline: none;" placeholder="ชื่อเรื่องนิยายของคุณ...">
+        
+        <div class="editor-container">
+            <div class="editor-toolbar">
+                <button class="toolbar-btn" onclick="formatDoc('bold')">B</button>
+                <button class="toolbar-btn" onclick="formatDoc('italic')">I</button>
+                <button class="toolbar-btn" onclick="formatDoc('underline')">U</button>
+                <button class="toolbar-btn" onclick="insertImage()">🖼️ ภาพ</button>
+                <button class="toolbar-btn" onclick="formatDoc('foreColor', '#e5b539')">🎨 สีทอง</button>
             </div>
-            
-            <div class="studio-content">
-                <div id="tab-write" class="studio-tab active">
-                    <h3 style="margin-top: 0;">สร้างตอนใหม่</h3>
-                    <div class="form-group"><input type="text" class="form-control" placeholder="ชื่อตอน..."></div>
-                    <div class="form-group" style="background: #111; padding: 10px; border-radius: 5px; border-left: 3px solid var(--danger);">
-                        <label style="color: #fff; cursor: pointer; display: flex; align-items: center; gap: 10px; margin: 0;"><input type="checkbox" style="width: 18px; height: 18px;"> เนื้อหา 18+</label>
-                    </div>
-                    
-                    <div class="form-group">
-                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #888; margin-bottom: 10px;">
-                            <div><strong>จำนวนคำ: </strong> <span id="word-count" style="color: var(--accent);">0</span> คำ</div>
-                            <div><span id="save-status" style="color: var(--success); display: none;">✓ บันทึกฉบับร่างแล้ว</span></div>
-                        </div>
+            <div id="post-editor" class="writer-editor" contenteditable="true" placeholder="เริ่มร่ายเวทมนตร์ผ่านตัวอักษรที่นี่..."></div>
+        </div>
+        
+        <button class="btn btn-primary" style="margin-top: 25px; padding: 12px 40px;" id="save-btn" onclick="publishNovel()">✨ เผยแพร่ลงฐานข้อมูล</button>
+    </div>
 
-                        <div class="editor-toolbar">
-                            <button class="editor-btn" onclick="formatDoc('undo')" title="เลิกทำ (Undo)">↩️</button>
-                            <button class="editor-btn" onclick="formatDoc('redo')" title="ทำซ้ำ (Redo)">↪️</button>
-                            <span class="toolbar-divider"></span>
-
-                            <select class="editor-select" onchange="formatDoc('formatBlock', this.value); this.selectedIndex=0;" title="รูปแบบหัวข้อ">
-                                <option value="" selected hidden>หัวข้อ / ย่อหน้า</option>
-                                <option value="H1">📌 หัวข้อใหญ่สุด (H1)</option>
-                                <option value="H2">📌 หัวข้อรอง (H2)</option>
-                                <option value="H3">📌 หัวข้อย่อย (H3)</option>
-                                <option value="P">📝 เนื้อหาปกติ (P)</option>
-                            </select>
-                            <span class="toolbar-divider"></span>
-
-                            <button class="editor-btn" onclick="formatDoc('bold')" title="ตัวหนา"><b>B</b></button>
-                            <button class="editor-btn" onclick="formatDoc('italic')" title="ตัวเอียง"><i>I</i></button>
-                            <button class="editor-btn" onclick="formatDoc('underline')" title="ขีดเส้นใต้"><u>U</u></button>
-                            <button class="editor-btn" onclick="formatDoc('strikeThrough')" title="ขีดฆ่า"><s>S</s></button>
-                            <span class="toolbar-divider"></span>
-
-                            <button class="editor-btn" onclick="formatDoc('justifyLeft')" title="ชิดซ้าย">⬅️</button>
-                            <button class="editor-btn" onclick="formatDoc('justifyCenter')" title="กึ่งกลาง">↔️</button>
-                            <button class="editor-btn" onclick="formatDoc('justifyRight')" title="ชิดขวา">➡️</button>
-                            <span class="toolbar-divider"></span>
-                            
-                            <button class="editor-btn" onclick="formatDoc('insertUnorderedList')" title="บุลเล็ต">●</button>
-                            <button class="editor-btn" onclick="formatDoc('insertOrderedList')" title="ตัวเลข">1.</button>
-                            <button class="editor-btn" onclick="formatDoc('indent')" title="เพิ่มการเยื้อง">ย่อหน้า ❯</button>
-                            <span class="toolbar-divider"></span>
-
-                            <div style="display: flex; align-items: center; gap: 5px;" title="สีตัวอักษร">
-                                🎨 <input type="color" class="editor-color" onchange="formatDoc('foreColor', this.value)">
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 5px;" title="สีพื้นหลังข้อความ">
-                                🖍️ <input type="color" class="editor-color" onchange="formatDoc('hiliteColor', this.value)" value="#e5b539">
-                            </div>
-                            <span class="toolbar-divider"></span>
-
-                            <button class="editor-btn" onclick="insertLink()" title="แทรกลิงก์">🔗 ลิงก์</button>
-                            <button class="editor-btn" onclick="insertImage()" title="แทรกรูปภาพ">🖼️ ภาพ</button>
-                            <button class="editor-btn" onclick="formatDoc('insertHorizontalRule')" title="แทรกเส้นคั่น">➖</button>
-                            <span class="toolbar-divider"></span>
-
-                            <button class="editor-btn" onclick="formatDoc('removeFormat')" title="ล้างการจัดรูปแบบทั้งหมด" style="color: var(--danger); border-color: var(--danger);">❌ ล้างรูปแบบ</button>
-                        </div>
-                        <div id="novel-editor" class="writer-editor" contenteditable="true" placeholder="เริ่มสร้างสรรค์ตำนานของคุณที่นี่... สามารถเปลี่ยนสีตัวอักษร, สร้างหัวข้อใหญ่, หรือใส่บุลเล็ตได้เต็มที่!"></div>
-                    </div>
-                    
-                    <button class="btn btn-primary" onclick="publishNovel()">เผยแพร่เนื้อหา</button>
-                </div>
-
-                <div id="tab-novels" class="studio-tab">
-                    <h3 style="margin-top: 0;">นิยายทั้งหมด</h3>
-                    <div style="background: #111; padding: 15px; border-radius: 5px;"><strong style="color: var(--accent);">ราชันย์เวทมนตร์</strong> <span style="font-size: 0.8rem; color: #888;">(15 ตอน)</span></div>
-                </div>
-
-                <div id="tab-money" class="studio-tab">
-                    <h3 style="margin-top: 0;">ตั้งค่าการรับโดเนท (0% Fee)</h3>
-                    <div class="form-group"><label>อัปโหลดรูป QR Code พร้อมเพย์</label><input type="file" class="form-control" accept="image/*"></div>
-                    <div class="form-group"><label>ลิงก์สนับสนุน (Patreon / Ko-fi)</label><input type="text" class="form-control" placeholder="https://..."></div>
-                    <button class="btn btn-primary">บันทึกข้อมูล</button>
-                </div>
-            </div>
+    <div id="reader-view" class="view-section">
+        <button class="btn btn-outline" onclick="switchView('home-view')">⬅ กลับหน้าหลัก</button>
+        <div class="reader-box">
+            <h1 id="view-title" style="color: var(--accent); text-align: center; font-family: 'Cinzel', serif; font-size: 2.5rem; margin-bottom: 10px;"></h1>
+            <p id="view-author" style="text-align: center; color: #888; margin-bottom: 40px;"></p>
+            <div id="view-content" style="font-size: 1.25rem; white-space: pre-wrap;"></div>
         </div>
     </div>
 
-    <div id="tos-view" class="view-section">
-        <button class="btn btn-outline" onclick="switchView('home-view')" style="margin-bottom: 20px;">⬅ กลับหน้าหลัก</button>
-        <div class="sidebar-box">
-            <h2 style="color: var(--accent); text-align: center; margin-top: 0;">ข้อตกลงและเงื่อนไขการใช้งาน</h2>
-            <p>1. แพลตฟอร์มเป็นเพียงสื่อกลาง ไม่เกี่ยวข้องกับการรับชำระเงิน<br>2. นักเขียนต้องจัดการเรื่องภาษีด้วยตนเอง<br>3. ห้ามละเมิดลิขสิทธิ์ และต้องติดป้าย 18+ อย่างเคร่งครัด</p>
+    <div class="view-section active" style="padding-top: 0;">
+        <h2 class="section-title">💡 คำถามที่พบบ่อย (Q&A)</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            <div class="sidebar-box"><h4>หักส่วนแบ่งไหม?</h4><p>0% ครับ นักเขียนรับเงินตรงจากนักอ่านเต็มจำนวน</p></div>
+            <div class="sidebar-box"><h4>ลิขสิทธิ์เป็นของใคร?</h4><p>เป็นของผู้เขียน 100% แพลตฟอร์มไม่มีสิทธิ์ผูกมัดใดๆ</p></div>
         </div>
     </div>
 
     <footer class="footer">
-        <div class="footer-grid">
-            <div class="footer-col">
-                <h3>Fantasy Realm</h3>
-                <p style="color: #888; font-size: 0.95rem;">อาณาจักรนิยายแฟนตาซีที่มอบอิสระและรายได้แบบเต็มเม็ดเต็มหน่วยให้แก่นักเขียนทุกท่าน</p>
-            </div>
-            <div class="footer-col">
-                <h4 style="color: #fff; margin-bottom: 15px;">เกี่ยวกับเรา</h4>
-                <a onclick="switchView('tos-view')">เงื่อนไขการใช้งาน (TOS)</a>
-                <a href="#">นโยบายความเป็นส่วนตัว</a>
-                <a href="#">คำถามที่พบบ่อย</a>
-            </div>
-            <div class="footer-col">
-                <h4 style="color: #fff; margin-bottom: 15px;">ติดต่อและติดตาม</h4>
-                <a href="#">Facebook Page</a>
-                <a href="#">Twitter (X)</a>
-                <a href="#">ติดต่อโฆษณา / แอดมิน</a>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            &copy; 2026 Fantasy Realm. All Rights Reserved. ไม่สงวนลิขสิทธิ์เนื้อหานิยายซึ่งเป็นของผู้เขียน 100%
-        </div>
+        &copy; 2026 Fantasy Realm V2 | อาณาจักรที่ยุติธรรมที่สุดสำหรับนักเขียน
     </footer>
 
-    <div class="modal-overlay" id="loginModal">
-        <div class="modal-box">
-            <span class="close-btn" onclick="closeModal('loginModal')">&times;</span>
-            <h2 style="color: var(--accent); text-align: center; margin-top: 0;">เข้าสู่ระบบ</h2>
-            <div class="form-group"><input type="text" class="form-control" id="login-input" placeholder="อีเมล / นามปากกา"></div>
-            <button class="btn btn-primary" style="width: 100%;" onclick="simulateLogin()">ล็อกอิน</button>
-        </div>
-    </div>
-    <div class="modal-overlay" id="registerModal">
-        <div class="modal-box">
-            <span class="close-btn" onclick="closeModal('registerModal')">&times;</span>
-            <h2 style="color: var(--accent); text-align: center; margin-top: 0;">สร้างบัญชี</h2>
-            <div class="form-group"><input type="email" class="form-control" placeholder="อีเมล"></div>
-            <div class="form-group"><input type="text" class="form-control" placeholder="นามปากกา"></div>
-            <div class="form-group"><input type="password" class="form-control" placeholder="รหัสผ่าน"></div>
-            <div class="form-group">
-                <label style="color: #aaa; font-size: 0.85rem; display: flex; align-items: flex-start; gap: 8px; cursor: pointer;">
-                    <input type="checkbox" id="tos-agree" style="margin-top: 3px;">
-                    <span>ยืนยันอายุ 13+ และยอมรับ <a onclick="closeModal('registerModal'); switchView('tos-view');" style="color: var(--accent); text-decoration: underline;">เงื่อนไขการใช้งาน</a></span>
-                </label>
-            </div>
-            <button class="btn btn-primary" style="width: 100%;" onclick="checkRegister()">สมัครสมาชิก</button>
-        </div>
-    </div>
-
     <script>
-        function switchView(viewId) {
-            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
-            window.scrollTo(0, 0); checkLastRead();
-        }
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        window.onclick = function(e) { if(e.target.className === 'modal-overlay') e.target.style.display = 'none'; }
+        // =========================================
+        // 🔑 1. CONFIG: เชื่อมต่อ Firebase (รหัสจริงจากรูปของคุณ)
+        // =========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBxHbbY6BmA8j9jpA3CLeODnwSGT6iiA2s",
+            authDomain: "fantasy-realm-v2.firebaseapp.com",
+            projectId: "fantasy-realm-v2",
+            storageBucket: "fantasy-realm-v2.firebasestorage.app",
+            messagingSenderId: "276174811412",
+            appId: "1:276174811412:web:276ae46a7180265bfb9201",
+            measurementId: "G-PX74GQGT88"
+        };
 
-        function simulateLogin() {
-            document.getElementById('display-name').innerText = document.getElementById('login-input').value || 'นักอ่านใจดี';
-            document.getElementById('guest-nav').style.display = 'none';
-            document.getElementById('user-nav').style.display = 'flex';
-            closeModal('loginModal'); checkLastRead();
-        }
-        function logout() {
-            document.getElementById('guest-nav').style.display = 'flex';
-            document.getElementById('user-nav').style.display = 'none';
-            switchView('home-view');
-        }
-        function checkRegister() {
-            if (!document.getElementById('tos-agree').checked) alert('กรุณายอมรับเงื่อนไข');
-            else { alert('สมัครสำเร็จ!'); closeModal('registerModal'); simulateLogin(); }
-        }
+        // เริ่มระบบ
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const provider = new firebase.auth.GoogleAuthProvider();
 
-        let currentReadingNovel = { title: "", chapter: "" };
-        function openReader(title, chapter, is18Plus) {
-            if (is18Plus && !confirm("⚠️ นิยาย 18+ ยืนยันการอ่านหรือไม่?")) return;
-            document.getElementById('reader-title').innerText = `${title} - ${chapter}`;
-            
-            let draft = localStorage.getItem('novelDraftHTML');
-            if(draft && title === 'ตอนที่เพิ่งแต่ง') {
-                document.getElementById('reader-content').innerHTML = draft;
+        let userAccount = null;
+
+        // =========================================
+        // 🚀 AUTH: ระบบสมาชิก
+        // =========================================
+        function loginWithGoogle() { auth.signInWithPopup(provider).catch(e => alert(e.message)); }
+        function logout() { auth.signOut(); }
+
+        auth.onAuthStateChanged((user) => {
+            userAccount = user;
+            const authUI = document.getElementById('auth-ui');
+            if (user) {
+                authUI.innerHTML = `
+                    <div class="user-profile">
+                        <img src="${user.photoURL}" class="user-avatar">
+                        <span style="color:var(--accent); font-weight:bold;">${user.displayName}</span>
+                        <button class="btn btn-outline" onclick="switchView('studio-view')">สตูดิโอ</button>
+                        <button class="btn btn-outline" onclick="logout()" style="border:none; color:#666; font-size:0.8rem;">[ออก]</button>
+                    </div>
+                `;
             } else {
-                document.getElementById('reader-content').innerHTML = `<p>เนื้อหาจำลองของ <b>${title}</b>...</p>`;
+                authUI.innerHTML = `<button class="btn btn-primary" onclick="loginWithGoogle()">🔑 ล็อกอิน Gmail จริง</button>`;
+                switchView('home-view');
             }
-            
-            switchView('reader-view');
-            currentReadingNovel = { title: title, chapter: chapter };
-            localStorage.setItem('lastRead', JSON.stringify(currentReadingNovel));
-        }
-
-        function checkLastRead() {
-            let lastRead = JSON.parse(localStorage.getItem('lastRead'));
-            let crs = document.getElementById('continue-reading-section');
-            if (lastRead && document.getElementById('home-view').classList.contains('active') && document.getElementById('user-nav').style.display === 'flex') {
-                crs.style.display = 'flex';
-                document.getElementById('last-read-title').innerText = `${lastRead.title} - ${lastRead.chapter}`;
-            } else { crs.style.display = 'none'; }
-        }
-        function resumeReading() {
-            let lr = JSON.parse(localStorage.getItem('lastRead'));
-            if(lr) openReader(lr.title, lr.chapter, false);
-        }
-        function addToBookshelf() { alert('❤️ เก็บเข้า "ชั้นหนังสือ" เรียบร้อยแล้ว!'); }
-
-        let currentFontSize = parseInt(localStorage.getItem('readerFontSize')) || 18;
-        document.getElementById('reader-content').style.fontSize = currentFontSize + 'px';
-        setTheme(localStorage.getItem('readerTheme') || 'dark');
-        function changeFontSize(change) {
-            currentFontSize = Math.max(12, Math.min(32, currentFontSize + change));
-            document.getElementById('reader-content').style.fontSize = currentFontSize + 'px';
-            localStorage.setItem('readerFontSize', currentFontSize);
-        }
-        function setTheme(theme) {
-            document.body.className = '';
-            if(theme !== 'dark') document.body.classList.add('theme-' + theme);
-            localStorage.setItem('readerTheme', theme);
-        }
-
-        function switchStudioTab(tabId, element) {
-            document.querySelectorAll('.studio-menu div').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.studio-tab').forEach(tab => tab.classList.remove('active'));
-            element.classList.add('active'); document.getElementById(tabId).classList.add('active');
-        }
-
-        // 🛠️ ระบบเครื่องมือนักเขียน
-        const editor = document.getElementById('novel-editor');
-        const wordCountDisplay = document.getElementById('word-count');
-        const saveStatus = document.getElementById('save-status');
-        let saveTimeout;
-
-        function formatDoc(cmd, value=null) {
-            if(value) {
-                document.execCommand(cmd, false, value);
-            } else {
-                document.execCommand(cmd, false, null);
-            }
-            editor.focus();
-        }
-
-        function insertLink() { let url = prompt("ใส่ URL:", "https://"); if (url) formatDoc('createLink', url); }
-        function insertImage() { let url = prompt("ใส่ URL ของรูปภาพ:", "https://"); if (url) formatDoc('insertImage', url); }
-
-        editor.innerHTML = localStorage.getItem('novelDraftHTML') || '';
-        updateWordCount();
-
-        editor.addEventListener('input', function() {
-            updateWordCount(); 
-            saveStatus.style.display = 'none'; 
-            clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(() => {
-                localStorage.setItem('novelDraftHTML', editor.innerHTML);
-                saveStatus.style.display = 'inline-block';
-                setTimeout(() => saveStatus.style.display = 'none', 3000);
-            }, 1000);
         });
 
-        function updateWordCount() {
-            let text = editor.innerText.trim();
-            wordCountDisplay.innerText = text === '' ? 0 : text.split(/\s+/).length;
+        // =========================================
+        // 💾 FIRESTORE: บันทึกข้อมูลจริง (ไม่มั่ว)
+        // =========================================
+        async function publishNovel() {
+            const title = document.getElementById('post-title').value;
+            const content = document.getElementById('post-editor').innerHTML;
+            const btn = document.getElementById('save-btn');
+
+            if (!userAccount) return alert("กรุณาล็อกอินก่อนเผยแพร่ตำนาน!");
+            if (!title || content === "") return alert("กรุณาระบุชื่อเรื่องและเนื้อหา!");
+
+            btn.innerText = "กำลังจารึกข้อมูล...";
+            btn.disabled = true;
+
+            try {
+                await db.collection("novels-v2").add({
+                    title: title,
+                    content: content,
+                    author: userAccount.displayName,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert("✨ เผยแพร่ตำนานบทใหม่สำเร็จแล้ว!");
+                document.getElementById('post-title').value = "";
+                document.getElementById('post-editor').innerHTML = "";
+                switchView('home-view');
+            } catch (e) {
+                alert("เกิดข้อผิดพลาด: " + e.message);
+            } finally {
+                btn.innerText = "✨ เผยแพร่ลงฐานข้อมูล";
+                btn.disabled = false;
+            }
         }
 
-        function publishNovel() {
-            alert('เผยแพร่เรียบร้อย! เราจะพาคุณไปดูหน้าตาจริงของนิยายที่คุณเพิ่งแต่ง');
-            openReader('ตอนที่เพิ่งแต่ง', 'ทดสอบเนื้อหาจริง', false);
+        // =========================================
+        // 📖 REAL-TIME: ดึงข้อมูลอัตโนมัติ
+        // =========================================
+        db.collection("novels-v2").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+            const list = document.getElementById('novel-list');
+            const ranking = document.getElementById('ranking-list');
+            const updates = document.getElementById('updates-list');
+            
+            list.innerHTML = ""; ranking.innerHTML = ""; updates.innerHTML = "";
+
+            if (snapshot.empty) {
+                list.innerHTML = "<p style='color:#555;'>ยังไม่มีใครเขียนตำนาน... เริ่มเป็นคนแรกเลย!</p>";
+                return;
+            }
+
+            let rank = 1;
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                
+                // การ์ดนิยาย
+                const card = document.createElement('div');
+                card.className = 'novel-card';
+                card.onclick = () => openReader(data.title, data.content, data.author);
+                card.innerHTML = `<div class="cover">📖 READ</div><div class="info"><h4>${data.title}</h4><small>โดย ${data.author}</small></div>`;
+                list.appendChild(card);
+
+                // แถบข้างอัปเดต
+                const item = document.createElement('div');
+                item.className = 'sidebar-item';
+                item.onclick = () => openReader(data.title, data.content, data.author);
+                item.innerHTML = `📜 ${data.title} <br><small style="color:#555;">โดย ${data.author}</small>`;
+                updates.appendChild(item);
+
+                // อันดับ
+                if(rank <= 3) {
+                    const rItem = document.createElement('div');
+                    rItem.className = 'sidebar-item';
+                    rItem.onclick = () => openReader(data.title, data.content, data.author);
+                    rItem.innerHTML = `<strong style="color:var(--accent)">${rank}.</strong> ${data.title}`;
+                    ranking.appendChild(rItem);
+                    rank++;
+                }
+            });
+        });
+
+        // System Core
+        function switchView(id) {
+            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            window.scrollTo(0,0);
         }
+
+        function openReader(t, c, a) {
+            document.getElementById('view-title').innerText = t;
+            document.getElementById('view-author').innerText = "จารึกโดย: " + a;
+            document.getElementById('view-content').innerHTML = c;
+            switchView('reader-view');
+            
+            // ประวัติอ่านต่อ
+            localStorage.setItem('lastRead_v2', JSON.stringify({title: t, content: c, author: a}));
+            checkReadingHistory();
+        }
+
+        function checkReadingHistory() {
+            const history = JSON.parse(localStorage.getItem('lastRead_v2'));
+            const bar = document.getElementById('reading-bar');
+            if(history) {
+                bar.style.display = 'flex';
+                document.getElementById('reading-title').innerText = history.title;
+            }
+        }
+
+        function resumeReading() {
+            const h = JSON.parse(localStorage.getItem('lastRead_v2'));
+            if(h) openReader(h.title, h.content, h.author);
+        }
+
+        function formatDoc(cmd, val=null) { document.execCommand(cmd, false, val); document.getElementById('post-editor').focus(); }
+        function insertImage() { const url = prompt("ใส่ URL รูปภาพ:"); if(url) formatDoc('insertImage', url); }
+
+        window.onload = checkReadingHistory;
     </script>
 </body>
 </html>
