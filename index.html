@@ -77,7 +77,7 @@
         .toolbar-btn:hover { background: var(--accent); color: #000; }
 
         /* Reader */
-        .reader-box { max-width: 850px; margin: 20px auto; background: var(--card-bg); padding: 50px; border-radius: 12px; border-top: 5px solid var(--accent); box-shadow: 0 15px 50px rgba(0,0,0,0.7); }
+        .reader-box { max-width: 850px; margin: 20px auto; background: var(--card-bg); padding: 60px; border-radius: 12px; border-top: 5px solid var(--accent); box-shadow: 0 15px 50px rgba(0,0,0,0.7); }
         
         .footer { background: #050508; border-top: 1px solid var(--border); padding: 60px 5%; margin-top: 80px; text-align: center; color: #555; }
     </style>
@@ -144,22 +144,11 @@
         </div>
     </div>
 
-    <div class="view-section active" style="padding-top: 0;">
-        <h2 class="section-title">💡 คำถามที่พบบ่อย (Q&A)</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-            <div class="sidebar-box"><h4>หักส่วนแบ่งไหม?</h4><p>0% ครับ นักเขียนรับเงินตรงจากนักอ่านเต็มจำนวน</p></div>
-            <div class="sidebar-box"><h4>ลิขสิทธิ์เป็นของใคร?</h4><p>เป็นของผู้เขียน 100% แพลตฟอร์มไม่มีสิทธิ์ผูกมัดใดๆ</p></div>
-        </div>
-    </div>
-
     <footer class="footer">
         &copy; 2026 Fantasy Realm V2 | อาณาจักรที่ยุติธรรมที่สุดสำหรับนักเขียน
     </footer>
 
     <script>
-        // =========================================
-        // 🔑 1. CONFIG: เชื่อมต่อ Firebase (รหัสจริงจากรูปของคุณ)
-        // =========================================
         const firebaseConfig = {
             apiKey: "AIzaSyBxHbbY6BmA8j9jpA3CLeODnwSGT6iiA2s",
             authDomain: "fantasy-realm-v2.firebaseapp.com",
@@ -170,7 +159,6 @@
             measurementId: "G-PX74GQGT88"
         };
 
-        // เริ่มระบบ
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
@@ -178,9 +166,6 @@
 
         let userAccount = null;
 
-        // =========================================
-        // 🚀 AUTH: ระบบสมาชิก
-        // =========================================
         function loginWithGoogle() { auth.signInWithPopup(provider).catch(e => alert(e.message)); }
         function logout() { auth.signOut(); }
 
@@ -202,20 +187,14 @@
             }
         });
 
-        // =========================================
-        // 💾 FIRESTORE: บันทึกข้อมูลจริง (ไม่มั่ว)
-        // =========================================
         async function publishNovel() {
             const title = document.getElementById('post-title').value;
             const content = document.getElementById('post-editor').innerHTML;
             const btn = document.getElementById('save-btn');
-
-            if (!userAccount) return alert("กรุณาล็อกอินก่อนเผยแพร่ตำนาน!");
-            if (!title || content === "") return alert("กรุณาระบุชื่อเรื่องและเนื้อหา!");
-
+            if (!userAccount) return alert("กรุณาล็อกอินก่อน!");
+            if (!title || content === "") return alert("กรุณากรอกข้อมูลให้ครบ!");
             btn.innerText = "กำลังจารึกข้อมูล...";
             btn.disabled = true;
-
             try {
                 await db.collection("novels-v2").add({
                     title: title,
@@ -223,52 +202,40 @@
                     author: userAccount.displayName,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                alert("✨ เผยแพร่ตำนานบทใหม่สำเร็จแล้ว!");
+                alert("✨ สำเร็จ!");
                 document.getElementById('post-title').value = "";
                 document.getElementById('post-editor').innerHTML = "";
                 switchView('home-view');
-            } catch (e) {
-                alert("เกิดข้อผิดพลาด: " + e.message);
-            } finally {
+            } catch (e) { alert(e.message); } finally {
                 btn.innerText = "✨ เผยแพร่ลงฐานข้อมูล";
                 btn.disabled = false;
             }
         }
 
-        // =========================================
-        // 📖 REAL-TIME: ดึงข้อมูลอัตโนมัติ
-        // =========================================
         db.collection("novels-v2").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
             const list = document.getElementById('novel-list');
             const ranking = document.getElementById('ranking-list');
             const updates = document.getElementById('updates-list');
-            
             list.innerHTML = ""; ranking.innerHTML = ""; updates.innerHTML = "";
-
             if (snapshot.empty) {
-                list.innerHTML = "<p style='color:#555;'>ยังไม่มีใครเขียนตำนาน... เริ่มเป็นคนแรกเลย!</p>";
+                list.innerHTML = "<p style='color:#555;'>ยังไม่มีใครเขียนตำนาน...</p>";
                 return;
             }
-
             let rank = 1;
             snapshot.forEach((doc) => {
                 const data = doc.data();
-                
-                // การ์ดนิยาย
                 const card = document.createElement('div');
                 card.className = 'novel-card';
                 card.onclick = () => openReader(data.title, data.content, data.author);
                 card.innerHTML = `<div class="cover">📖 READ</div><div class="info"><h4>${data.title}</h4><small>โดย ${data.author}</small></div>`;
                 list.appendChild(card);
 
-                // แถบข้างอัปเดต
                 const item = document.createElement('div');
                 item.className = 'sidebar-item';
                 item.onclick = () => openReader(data.title, data.content, data.author);
                 item.innerHTML = `📜 ${data.title} <br><small style="color:#555;">โดย ${data.author}</small>`;
                 updates.appendChild(item);
 
-                // อันดับ
                 if(rank <= 3) {
                     const rItem = document.createElement('div');
                     rItem.className = 'sidebar-item';
@@ -280,7 +247,6 @@
             });
         });
 
-        // System Core
         function switchView(id) {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -292,8 +258,6 @@
             document.getElementById('view-author').innerText = "จารึกโดย: " + a;
             document.getElementById('view-content').innerHTML = c;
             switchView('reader-view');
-            
-            // ประวัติอ่านต่อ
             localStorage.setItem('lastRead_v2', JSON.stringify({title: t, content: c, author: a}));
             checkReadingHistory();
         }
