@@ -79,7 +79,7 @@
         .sidebar-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 25px; }
         .ad-space { background: #15151a; border: 1px dashed #444; display: flex; align-items: center; justify-content: center; color: #666; text-align: center; border-radius: 10px; padding: 20px; }
 
-        /* 🌟 คลาสใหม่สำหรับทำให้ Sidebar คลิกได้ */
+        /* 🌟 คลาสสำหรับทำให้ Sidebar คลิกได้ */
         .sidebar-list-item { 
             padding: 10px 0; 
             border-bottom: 1px solid var(--border); 
@@ -210,9 +210,24 @@
 
         <div class="home-grid">
             <div>
-                <h2 class="section-title">🔥 นิยายจากนักเขียน (อัปเดตจริง) <span>ดูทั้งหมด ></span></h2>
-                <div class="novel-grid" id="db-novel-grid">
-                    <p style="color: #666;">กำลังดึงข้อมูลจากระบบ...</p>
+                <h2 class="section-title" style="color: #ffd700;">✨ นิยายอัปเดตล่าสุด (จากนักเขียนจริง) <span>ดูทั้งหมด ></span></h2>
+                <div class="novel-grid" id="firebase-novel-grid" style="margin-bottom: 40px;">
+                    </div>
+
+                <h2 class="section-title">🔥 นิยายมาแรงสัปดาห์นี้ <span>ดูทั้งหมด ></span></h2>
+                <div class="novel-grid">
+                    <div class="novel-card" onclick="openReader('ราชันย์เวทมนตร์', 'ตอนที่ 15: ตื่นรู้', false)">
+                        <div class="cover">[รูปปก]</div>
+                        <div class="info"><h4>ราชันย์เวทมนตร์</h4><div style="font-size: 0.8rem; color: #aaa; display: flex; justify-content: space-between;"><span>👁️ 120K</span> <span style="color:var(--accent)">⭐ 4.9</span></div></div>
+                    </div>
+                    <div class="novel-card" onclick="openReader('ศึกสายเลือดมังกร', 'ตอนที่ 8: อาบเลือด', true)">
+                        <div class="cover"><span class="badge-18">18+</span>[รูปปก]</div>
+                        <div class="info"><h4>ศึกสายเลือดมังกร</h4><div style="font-size: 0.8rem; color: #aaa; display: flex; justify-content: space-between;"><span>👁️ 85K</span> <span style="color:var(--accent)">⭐ 4.7</span></div></div>
+                    </div>
+                    <div class="novel-card" onclick="openReader('ระบบสร้างเมือง', 'ตอนที่ 12: เริ่มก่อสร้าง', false)">
+                        <div class="cover">[รูปปก]</div>
+                        <div class="info"><h4>ระบบสร้างเมือง</h4><div style="font-size: 0.8rem; color: #aaa; display: flex; justify-content: space-between;"><span>👁️ 50K</span> <span style="color:var(--accent)">⭐ 4.5</span></div></div>
+                    </div>
                 </div>
 
                 <h2 class="section-title" style="margin-top: 40px;">💎 บรรณาธิการแนะนำ <span>ดูทั้งหมด ></span></h2>
@@ -241,6 +256,10 @@
             </div>
 
             <div>
+                <div class="sidebar-box" id="firebase-sidebar-updates" style="border-color: #ffd700;">
+                    <h3 style="margin-top: 0; color: #ffd700; border-bottom: 1px solid var(--border); padding-bottom: 12px;">⏱️ อัปเดตตอนใหม่ (ระบบจริง)</h3>
+                </div>
+
                 <div class="sidebar-box">
                     <h3 style="margin-top: 0; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 12px;">🏆 Top 3 ประจำวัน</h3>
                     <div class="sidebar-list-item" onclick="openReader('ราชันย์เวทมนตร์', 'ตอนที่ 15', false)">
@@ -254,9 +273,17 @@
                     </div>
                 </div>
 
-                <div class="sidebar-box" id="db-sidebar-updates">
-                    <h3 style="margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 12px;">⏱️ อัปเดตล่าสุด</h3>
-                    <p style="color: #666; font-size: 0.9rem;">กำลังดึงข้อมูล...</p>
+                <div class="sidebar-box">
+                    <h3 style="margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 12px;">⏱️ อัปเดตล่าสุด (ข้อมูลจำลอง)</h3>
+                    <div class="sidebar-list-item" onclick="openReader('อัศวินศักดิ์สิทธิ์', 'ตอนที่ 42', false)">
+                        [10:45] อัศวินศักดิ์สิทธิ์ - ตอนที่ 42
+                    </div>
+                    <div class="sidebar-list-item" onclick="openReader('ดินแดนคนบาป', 'ตอนที่ 5', true)">
+                        [10:30] ดินแดนคนบาป - ตอนที่ 5 <span style="color: var(--danger); font-size: 0.7rem; border: 1px solid var(--danger); padding: 1px 3px; border-radius: 3px; margin-left: 5px;">18+</span>
+                    </div>
+                    <div class="sidebar-list-item" onclick="openReader('ระบบสร้างเมือง', 'ตอนที่ 12', false)">
+                        [09:15] ระบบสร้างเมือง - ตอนที่ 12
+                    </div>
                 </div>
                 
                 <div class="ad-space" style="height: 300px;">[พื้นที่โฆษณา Banner]</div>
@@ -304,7 +331,6 @@
             <div class="reader-content-box">
                 <h2 id="reader-title" style="color: var(--accent); text-align: center; margin-top: 0; font-family: 'Cinzel', serif;">ชื่อเรื่อง - ตอนที่...</h2>
                 <div id="reader-content" class="reader-text"><p>เนื้อหาจำลอง</p></div>
-                
                 <div class="donate-box">
                     <h3 style="color: var(--accent); margin-top: 0;">💖 สนับสนุนนักเขียนโดยตรง</h3>
                     <p style="font-size: 0.95rem; color: #aaa;">รายได้ 100% เข้ากระเป๋านักเขียน</p>
@@ -339,8 +365,24 @@
             
             <div class="studio-content">
                 <div id="tab-write" class="studio-tab active">
-                    <h3 style="margin-top: 0;">สร้างตอนใหม่ (อัปโหลดเข้าฐานข้อมูลจริง)</h3>
-                    <div class="form-group"><input type="text" id="db-novel-title" class="form-control" placeholder="ชื่อเรื่อง / ตอนที่..."></div>
+                    <h3 style="margin-top: 0;">สร้างตอนใหม่</h3>
+                    
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <div class="form-group" style="flex: 2; margin: 0;">
+                            <label>ชื่อเรื่อง</label>
+                            <input type="text" id="novel-name" class="form-control" placeholder="เช่น ราชันย์เวทมนตร์...">
+                        </div>
+                        <div class="form-group" style="flex: 1; margin: 0;">
+                            <label>ตอนที่</label>
+                            <input type="number" id="chapter-num" class="form-control" placeholder="เช่น 1, 2...">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>ชื่อตอน (ถ้ามี)</label>
+                        <input type="text" id="chapter-title" class="form-control" placeholder="เช่น จุดเริ่มต้นของตำนาน...">
+                    </div>
+
                     <div class="form-group" style="background: #111; padding: 10px; border-radius: 5px; border-left: 3px solid var(--danger);">
                         <label style="color: #fff; cursor: pointer; display: flex; align-items: center; gap: 10px; margin: 0;"><input type="checkbox" style="width: 18px; height: 18px;"> เนื้อหา 18+</label>
                     </div>
@@ -348,6 +390,7 @@
                     <div class="form-group">
                         <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #888; margin-bottom: 10px;">
                             <div><strong>จำนวนคำ: </strong> <span id="word-count" style="color: var(--accent);">0</span> คำ</div>
+                            <div><span id="save-status" style="color: var(--success); display: none;">✓ บันทึกฉบับร่างแล้ว</span></div>
                         </div>
 
                         <div class="editor-toolbar">
@@ -398,12 +441,12 @@
                         <div id="novel-editor" class="writer-editor" contenteditable="true" placeholder="เริ่มสร้างสรรค์ตำนานของคุณที่นี่... สามารถเปลี่ยนสีตัวอักษร, สร้างหัวข้อใหญ่, หรือใส่บุลเล็ตได้เต็มที่!"></div>
                     </div>
                     
-                    <button class="btn btn-primary" onclick="publishNovel()">✨ เผยแพร่ลงฐานข้อมูล (Firebase)</button>
+                    <button class="btn btn-primary" id="publish-btn" onclick="publishNovel()">เผยแพร่เนื้อหา (บันทึกลงฐานข้อมูล)</button>
                 </div>
 
                 <div id="tab-novels" class="studio-tab">
                     <h3 style="margin-top: 0;">นิยายทั้งหมด</h3>
-                    <div style="background: #111; padding: 15px; border-radius: 5px; color: #888;">ระบบจะดึงนิยายของคุณมาแสดงที่นี่ในอนาคต</div>
+                    <div style="background: #111; padding: 15px; border-radius: 5px;"><strong style="color: var(--accent);">ราชันย์เวทมนตร์</strong> <span style="font-size: 0.8rem; color: #888;">(15 ตอน)</span></div>
                 </div>
 
                 <div id="tab-money" class="studio-tab">
@@ -444,7 +487,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            &copy; 2026 Fantasy Realm. เชื่อมต่อระบบด้วย Google Firebase.
+            &copy; 2026 Fantasy Realm. All Rights Reserved. ไม่สงวนลิขสิทธิ์เนื้อหานิยายซึ่งเป็นของผู้เขียน 100%
         </div>
     </footer>
 
@@ -452,67 +495,61 @@
         <div class="modal-box">
             <span class="close-btn" onclick="closeModal('loginModal')">&times;</span>
             <h2 style="color: var(--accent); text-align: center; margin-top: 0;">เข้าสู่ระบบ</h2>
-            <button class="btn btn-primary" style="width: 100%; margin-top: 15px;" onclick="simulateLogin()">ล็อกอินด้วย Gmail</button>
+            <p style="text-align:center; color:#aaa; font-size:0.9rem;">(เข้าสู่ระบบด้วยบัญชี Google ของคุณเพื่อความปลอดภัย)</p>
+            <button class="btn btn-primary" style="width: 100%; margin-top:10px;" onclick="simulateLogin()">ล็อกอินด้วย Gmail</button>
         </div>
     </div>
     <div class="modal-overlay" id="registerModal">
         <div class="modal-box">
             <span class="close-btn" onclick="closeModal('registerModal')">&times;</span>
-            <h2 style="color: var(--accent); text-align: center; margin-top: 0;">สมัครสมาชิก</h2>
+            <h2 style="color: var(--accent); text-align: center; margin-top: 0;">สร้างบัญชี</h2>
             <div class="form-group">
                 <label style="color: #aaa; font-size: 0.85rem; display: flex; align-items: flex-start; gap: 8px; cursor: pointer;">
                     <input type="checkbox" id="tos-agree" style="margin-top: 3px;">
                     <span>ยืนยันอายุ 13+ และยอมรับ <a onclick="closeModal('registerModal'); switchView('tos-view');" style="color: var(--accent); text-decoration: underline;">เงื่อนไขการใช้งาน</a></span>
                 </label>
             </div>
-            <button class="btn btn-primary" style="width: 100%;" onclick="checkRegister()">สมัครด้วย Gmail</button>
+            <button class="btn btn-primary" style="width: 100%;" onclick="checkRegister()">สมัครสมาชิกด้วย Gmail</button>
         </div>
     </div>
 
     <script>
-        // 1. ตั้งค่ากุญแจ Firebase จริงของคุณ (จาก Fantasy-Realm-V2)
+        // --- 1. FIREBASE CONFIG (จากรูปล่าสุดของคุณ) ---
         const firebaseConfig = {
             apiKey: "AIzaSyBxHbbY6BmA8j9jpA3CLeODnwSGT6iiA2s",
             authDomain: "fantasy-realm-v2.firebaseapp.com",
             projectId: "fantasy-realm-v2",
             storageBucket: "fantasy-realm-v2.firebasestorage.app",
             messagingSenderId: "276174811412",
-            appId: "1:276174811412:web:276ae46a7180265bfb9201",
-            measurementId: "G-PX74GQGT88"
+            appId: "1:276174811412:web:276ae46a7180265bfb9201"
         };
-
-        // 2. เรียกใช้งานระบบ
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
         const provider = new firebase.auth.GoogleAuthProvider();
-
         let loggedInUser = null;
 
-        // 3. ระบบยืนยันตัวตน (เปลี่ยนปุ่มปลอมให้เรียก Google)
+        // --- 2. ฟังชันก์ UI เดิมของคุณ (ไม่มีการตัดทอน) ---
+        function switchView(viewId) {
+            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            window.scrollTo(0, 0); checkLastRead();
+        }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        window.onclick = function(e) { if(e.target.className === 'modal-overlay') e.target.style.display = 'none'; }
+
+        // ปรับปุ่มเข้าสู่ระบบให้เรียก Firebase
         function simulateLogin() {
-            auth.signInWithPopup(provider).then(() => {
-                closeModal('loginModal');
-            }).catch(e => alert(e.message));
+            auth.signInWithPopup(provider).then(() => closeModal('loginModal')).catch(e => alert(e.message));
         }
-
         function checkRegister() {
-            if (!document.getElementById('tos-agree').checked) {
-                alert('กรุณายอมรับเงื่อนไขก่อนครับ');
-            } else { 
-                auth.signInWithPopup(provider).then(() => {
-                    closeModal('registerModal');
-                }); 
-            }
+            if (!document.getElementById('tos-agree').checked) alert('กรุณายอมรับเงื่อนไข');
+            else { auth.signInWithPopup(provider).then(() => closeModal('registerModal')); }
         }
+        function logout() { auth.signOut(); }
 
-        function logout() {
-            auth.signOut().then(() => {
-                switchView('home-view');
-            });
-        }
-
-        // ตรวจจับว่าใครกำลังใช้งานเว็บอยู่
+        // จัดการสถานะการล็อกอิน
         auth.onAuthStateChanged((user) => {
             loggedInUser = user;
             if (user) {
@@ -526,101 +563,21 @@
             }
         });
 
-        // 4. บันทึกนิยายลงฐานข้อมูลของจริง
-        async function publishNovel() {
-            if(!loggedInUser) return alert('กรุณาล็อกอินก่อนเผยแพร่!');
-            
-            const titleInput = document.getElementById('db-novel-title');
-            const title = titleInput.value.trim();
-            const content = document.getElementById('novel-editor').innerHTML.trim();
-            
-            if(!title || !content || content === '<br>') {
-                return alert('กรุณาใส่ชื่อเรื่องและเนื้อหาให้ครบ');
-            }
-            
-            try {
-                await db.collection('novels-v2').add({
-                    title: title,
-                    content: content,
-                    author: loggedInUser.displayName,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                alert('บันทึกนิยายลงเซิร์ฟเวอร์สำเร็จ!');
-                titleInput.value = '';
-                document.getElementById('novel-editor').innerHTML = '';
-                switchView('home-view');
-            } catch(e) {
-                alert('Error: ' + e.message);
-            }
-        }
-
-        // 5. ดึงข้อมูลมาโชว์ที่หน้าแรก (Real-time)
-        db.collection('novels-v2').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
-            const grid = document.getElementById('db-novel-grid');
-            const updates = document.getElementById('db-sidebar-updates');
-            
-            if(!snapshot.empty) {
-                grid.innerHTML = ''; 
-                updates.innerHTML = '<h3 style="margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 12px;">⏱️ อัปเดตล่าสุด (จากฐานข้อมูล)</h3>';
-                
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    
-                    // แทรกใส่การ์ด
-                    grid.innerHTML += `
-                    <div class="novel-card" onclick="openReader('${data.title}', \`${data.content.replace(/`/g, '\\`')}\`, false, '${data.author}')">
-                        <div class="cover">📖 เปิดอ่าน</div>
-                        <div class="info">
-                            <h4>${data.title}</h4>
-                            <div style="font-size: 0.8rem; color: #aaa;">เขียนโดย ${data.author}</div>
-                        </div>
-                    </div>`;
-                    
-                    // แทรกใส่แถบด้านข้างขวา
-                    updates.innerHTML += `
-                    <div class="sidebar-list-item" onclick="openReader('${data.title}', \`${data.content.replace(/`/g, '\\`')}\`, false, '${data.author}')">
-                        📜 ${data.title} <br><span style="color:#888; font-size:0.8rem;">ผู้เขียน: ${data.author}</span>
-                    </div>`;
-                });
-            }
-        });
-
-        // 6. ฟังก์ชันจัดการหน้าตาและการทำงานอื่นๆ (เก็บของเดิมไว้ 100%)
-        function switchView(viewId) {
-            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
-            window.scrollTo(0, 0); checkLastRead();
-        }
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        window.onclick = function(e) { if(e.target.className === 'modal-overlay') e.target.style.display = 'none'; }
-
-        let currentReadingNovel = { title: "", chapter: "", author: "" };
-        
-        // อัปเกรด openReader ให้รับเนื้อหาจริงจากฐานข้อมูล
-        function openReader(title, chapterOrContent, is18Plus, author = "นักเขียน") {
+        // ฟังชันก์อ่านนิยาย (รองรับข้อมูลทั้งจำลองและของจริง)
+        let currentReadingNovel = { title: "", chapter: "" };
+        function openReader(title, chapter, is18Plus, contentHtml = null) {
             if (is18Plus && !confirm("⚠️ นิยาย 18+ ยืนยันการอ่านหรือไม่?")) return;
-            document.getElementById('reader-title').innerText = title;
             
-            // แสดงชื่อผู้เขียนด้านล่างชื่อเรื่อง
-            let authorEl = document.getElementById('reader-author');
-            if(!authorEl) {
-                authorEl = document.createElement('p');
-                authorEl.id = 'reader-author';
-                authorEl.style = "text-align: center; color: #888; margin-top: -10px; margin-bottom: 30px;";
-                document.getElementById('reader-title').insertAdjacentElement('afterend', authorEl);
-            }
-            authorEl.innerText = "ผู้เขียน: " + author;
+            document.getElementById('reader-title').innerText = `${title} - ${chapter}`;
             
-            // ตรวจสอบว่าเป็นข้อมูลจากฐานข้อมูล(HTML) หรือข้อมูลปลอม
-            if(chapterOrContent.includes('<p>') || chapterOrContent.includes('<div') || chapterOrContent.length > 50) {
-                document.getElementById('reader-content').innerHTML = chapterOrContent;
+            if(contentHtml && contentHtml !== "null") {
+                document.getElementById('reader-content').innerHTML = contentHtml;
             } else {
-                document.getElementById('reader-content').innerHTML = `<p>เนื้อหาจำลองของ <b>${title}</b>... (${chapterOrContent})</p>`;
+                document.getElementById('reader-content').innerHTML = `<p>เนื้อหาจำลองของ <b>${title}</b>...</p>`;
             }
             
             switchView('reader-view');
-            currentReadingNovel = { title: title, chapter: chapterOrContent, author: author };
+            currentReadingNovel = { title: title, chapter: chapter };
             localStorage.setItem('lastRead', JSON.stringify(currentReadingNovel));
         }
 
@@ -629,16 +586,16 @@
             let crs = document.getElementById('continue-reading-section');
             if (lastRead && document.getElementById('home-view').classList.contains('active') && document.getElementById('user-nav').style.display === 'flex') {
                 crs.style.display = 'flex';
-                document.getElementById('last-read-title').innerText = `${lastRead.title}`;
+                document.getElementById('last-read-title').innerText = `${lastRead.title} - ${lastRead.chapter}`;
             } else { crs.style.display = 'none'; }
         }
-        
         function resumeReading() {
             let lr = JSON.parse(localStorage.getItem('lastRead'));
-            if(lr) openReader(lr.title, lr.chapter, false, lr.author);
+            if(lr) openReader(lr.title, lr.chapter, false);
         }
         function addToBookshelf() { alert('❤️ เก็บเข้า "ชั้นหนังสือ" เรียบร้อยแล้ว!'); }
 
+        // เครื่องมือจัดหน้าอ่าน (ของเดิม)
         let currentFontSize = parseInt(localStorage.getItem('readerFontSize')) || 18;
         document.getElementById('reader-content').style.fontSize = currentFontSize + 'px';
         setTheme(localStorage.getItem('readerTheme') || 'dark');
@@ -659,9 +616,11 @@
             element.classList.add('active'); document.getElementById(tabId).classList.add('active');
         }
 
-        // เครื่องมือ Tool Bar 
+        // 🛠️ ระบบเครื่องมือนักเขียน (ของเดิม)
         const editor = document.getElementById('novel-editor');
         const wordCountDisplay = document.getElementById('word-count');
+        const saveStatus = document.getElementById('save-status');
+        let saveTimeout;
 
         function formatDoc(cmd, value=null) {
             if(value) { document.execCommand(cmd, false, value); } 
@@ -672,9 +631,101 @@
         function insertLink() { let url = prompt("ใส่ URL:", "https://"); if (url) formatDoc('createLink', url); }
         function insertImage() { let url = prompt("ใส่ URL ของรูปภาพ:", "https://"); if (url) formatDoc('insertImage', url); }
 
+        editor.innerHTML = localStorage.getItem('novelDraftHTML') || '';
+        updateWordCount();
+
         editor.addEventListener('input', function() {
+            updateWordCount(); 
+            saveStatus.style.display = 'none'; 
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                localStorage.setItem('novelDraftHTML', editor.innerHTML);
+                saveStatus.style.display = 'inline-block';
+                setTimeout(() => saveStatus.style.display = 'none', 3000);
+            }, 1000);
+        });
+
+        function updateWordCount() {
             let text = editor.innerText.trim();
             wordCountDisplay.innerText = text === '' ? 0 : text.split(/\s+/).length;
+        }
+
+        // --- 3. บันทึกและดึงข้อมูล Firebase (ผสานเข้ากับ UI เดิม) ---
+        async function publishNovel() {
+            if(!loggedInUser) return alert('กรุณาเข้าสู่ระบบก่อนเผยแพร่!');
+            
+            const nName = document.getElementById('novel-name').value.trim();
+            const cNum = document.getElementById('chapter-num').value.trim();
+            const cTitle = document.getElementById('chapter-title').value.trim();
+            const content = editor.innerHTML.trim();
+            const btn = document.getElementById('publish-btn');
+
+            if(!nName || !cNum || !content || content === '<br>') {
+                return alert('กรุณาระบุชื่อเรื่อง, ตอนที่ และเนื้อหาให้ครบถ้วน!');
+            }
+
+            btn.innerText = "กำลังจารึกข้อมูล..."; btn.disabled = true;
+
+            try {
+                let fullChapterName = `ตอนที่ ${cNum}`;
+                if(cTitle) fullChapterName += `: ${cTitle}`;
+
+                await db.collection("chapters").add({
+                    novelName: nName,
+                    chapterNumber: Number(cNum),
+                    chapterFullTitle: fullChapterName,
+                    content: content,
+                    author: loggedInUser.displayName,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                alert('เผยแพร่ลงฐานข้อมูลจริงเรียบร้อยแล้ว!');
+                document.getElementById('novel-name').value = '';
+                document.getElementById('chapter-num').value = '';
+                document.getElementById('chapter-title').value = '';
+                editor.innerHTML = '';
+                localStorage.removeItem('novelDraftHTML');
+                updateWordCount();
+                switchView('home-view');
+            } catch(e) {
+                alert('เกิดข้อผิดพลาด: ' + e.message);
+            } finally {
+                btn.innerText = "เผยแพร่เนื้อหา (บันทึกลงฐานข้อมูล)"; btn.disabled = false;
+            }
+        }
+
+        // ดึงข้อมูลแสดงหน้าแรก (โดยไม่ลบหน้าต่างของเก่า)
+        db.collection("chapters").orderBy("timestamp", "desc").onSnapshot(snapshot => {
+            const grid = document.getElementById('firebase-novel-grid');
+            const updates = document.getElementById('firebase-sidebar-updates');
+            
+            grid.innerHTML = "";
+            updates.innerHTML = '<h3 style="margin-top: 0; color: #ffd700; border-bottom: 1px solid var(--border); padding-bottom: 12px;">⏱️ อัปเดตตอนใหม่ (ระบบจริง)</h3>';
+
+            if(snapshot.empty) {
+                grid.innerHTML = "<p style='color:#666;'>กำลังรอจารึกบทแรก...</p>";
+                return;
+            }
+
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const contentEscaped = data.content.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                
+                grid.innerHTML += `
+                <div class="novel-card" style="border-color: #ffd700;" onclick="openReader('${data.novelName}', '${data.chapterFullTitle}', false, '${contentEscaped}')">
+                    <div class="cover"><span class="badge-end">ตอนที่ ${data.chapterNumber}</span>[รูปปกจริง]</div>
+                    <div class="info">
+                        <h4>${data.novelName}</h4>
+                        <div style="font-size: 0.8rem; color: #aaa;">ผู้แต่ง: ${data.author}</div>
+                    </div>
+                </div>`;
+
+                updates.innerHTML += `
+                <div class="sidebar-list-item" onclick="openReader('${data.novelName}', '${data.chapterFullTitle}', false, '${contentEscaped}')">
+                    <strong style="color:#ffd700;">${data.novelName}</strong><br>
+                    <span style="font-size:0.85rem; color:#aaa;">${data.chapterFullTitle} (${data.author})</span>
+                </div>`;
+            });
         });
     </script>
 </body>
