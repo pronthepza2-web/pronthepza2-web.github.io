@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fantasy Realm V2 - อาณาจักรนิยายใหม่</title>
+    <title>Fantasy Realm V2 - อาณาจักรนิยายแฟนตาซีระดับพรีเมียม</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
     
@@ -13,7 +13,7 @@
 
     <style>
         /* ========================================= */
-        /* 🎨 THEME & UI DESIGN */
+        /* 🎨 THEME & COLORS */
         /* ========================================= */
         :root { 
             --main-bg: #07070a; --card-bg: #111116; --text: #dcdce6; 
@@ -21,7 +21,9 @@
             --danger: #ff4757; --success: #2ed573; --border: #232332;
             --glow: rgba(229, 181, 57, 0.4);
         }
-        
+        body.theme-sepia { --main-bg: #f4ecd8; --card-bg: #e8dcb8; --text: #4a3b32; --border: #d4c5a9; }
+        body.theme-light { --main-bg: #f5f5f5; --card-bg: #ffffff; --text: #222222; --border: #dddddd; }
+
         body { 
             font-family: 'Sarabun', sans-serif; background: var(--main-bg); 
             background-image: radial-gradient(circle at 50% 0%, #131320 0%, var(--main-bg) 80%);
@@ -31,9 +33,11 @@
         a { text-decoration: none; color: inherit; cursor: pointer; }
         * { box-sizing: border-box; }
 
-        /* Navigation */
+        /* ========================================= */
+        /* 💎 NAVIGATION BAR */
+        /* ========================================= */
         .navbar { 
-            background: rgba(10, 10, 15, 0.95); border-bottom: 2px solid var(--border); 
+            background: #0a0a0f; border-bottom: 2px solid var(--border); 
             padding: 12px 5%; display: flex; justify-content: space-between; align-items: center; 
             position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
@@ -44,11 +48,14 @@
         .btn-primary { background: linear-gradient(45deg, var(--accent), #f1c40f); color: #000; box-shadow: 0 0 10px var(--glow); }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 20px var(--glow); }
         .btn-outline { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+        .btn-outline:hover { background: rgba(229, 181, 57, 0.1); box-shadow: 0 0 10px var(--glow); }
 
-        .user-profile { display: flex; align-items: center; gap: 10px; }
-        .user-avatar { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--accent); }
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .user-avatar { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--accent); }
 
-        /* Layout Views */
+        /* ========================================= */
+        /* 🖼️ PAGE VIEWS & HOME GRID */
+        /* ========================================= */
         .view-section { display: none; padding: 40px 5%; max-width: 1300px; margin: auto; animation: fadeIn 0.4s ease; }
         .view-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -56,30 +63,72 @@
         .home-grid { display: grid; grid-template-columns: 3fr 1fr; gap: 30px; }
         @media (max-width: 900px) { .home-grid { grid-template-columns: 1fr; } }
 
-        .section-title { font-size: 1.6rem; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-top: 0; }
+        .section-title { font-size: 1.6rem; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-top: 0; display: flex; justify-content: space-between; align-items: baseline; }
+        .section-title span { font-size: 0.9rem; color: var(--accent); font-weight: normal; cursor: pointer; }
         
         .novel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
-        .novel-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; cursor: pointer; transition: 0.3s; }
+        .novel-card { background: linear-gradient(145deg, #13131a, #0d0d12); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; cursor: pointer; position: relative; transition: 0.3s; }
         .novel-card:hover { transform: translateY(-8px); border-color: var(--accent); box-shadow: 0 10px 25px var(--glow); }
-        .cover { height: 260px; background: #222; display: flex; align-items: center; justify-content: center; color: #444; font-weight: bold; }
+        .cover { height: 260px; background: #222; display: flex; align-items: center; justify-content: center; color: #555; font-weight: bold; }
+        .badge-18 { position: absolute; top: 8px; right: 8px; background: var(--danger); color: white; padding: 3px 8px; font-size: 0.7rem; border-radius: 4px; font-weight: bold; }
         .info { padding: 15px; }
+        .info h4 { margin: 0 0 5px 0; font-size: 1.1rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .sidebar-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 25px; }
-        .sidebar-item { padding: 12px 0; border-bottom: 1px solid var(--border); cursor: pointer; display: block; }
-        .sidebar-item:hover { color: var(--accent); padding-left: 8px; }
+        .sidebar-list-item { padding: 12px 0; border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s; display: block; font-size: 0.95rem;}
+        .sidebar-list-item:hover { color: var(--accent); padding-left: 8px; background: rgba(255,255,255,0.02); }
 
-        /* Writer Studio */
-        .editor-container { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
-        .editor-toolbar { background: #0a0a0f; border-bottom: 1px solid var(--border); padding: 15px; display: flex; gap: 8px; flex-wrap: wrap; }
-        .writer-editor { width: 100%; min-height: 500px; background: #0a0a0f; color: #fff; padding: 30px; outline: none; overflow-y: auto; font-size: 1.15rem; }
-        .writer-editor[placeholder]:empty:before { content: attr(placeholder); color: #555; }
-        .toolbar-btn { background: #1a1a24; color: #aaa; border: 1px solid #333; border-radius: 4px; padding: 6px 12px; cursor: pointer; font-weight: bold; }
-        .toolbar-btn:hover { background: var(--accent); color: #000; }
+        /* ========================================= */
+        /* ⚙️ STUDIO: กลับมาจัดเต็ม! (Full Layout) */
+        /* ========================================= */
+        .studio-layout { display: grid; grid-template-columns: 250px 1fr; gap: 25px; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); min-height: 600px; margin-top: 20px; }
+        .studio-menu { border-right: 1px solid var(--border); padding: 20px 0; }
+        .studio-menu div { padding: 15px 20px; cursor: pointer; color: #888; transition: 0.3s; border-left: 3px solid transparent; font-weight: 600; }
+        .studio-menu div:hover, .studio-menu div.active { background: rgba(229, 181, 57, 0.1); color: var(--accent); border-left-color: var(--accent); }
+        .studio-content { padding: 30px; width: 100%; overflow: hidden; }
+        .studio-tab { display: none; }
+        .studio-tab.active { display: block; animation: fadeIn 0.3s; }
 
-        /* Reader */
-        .reader-box { max-width: 850px; margin: 20px auto; background: var(--card-bg); padding: 60px; border-radius: 12px; border-top: 5px solid var(--accent); box-shadow: 0 15px 50px rgba(0,0,0,0.7); }
-        
-        .footer { background: #050508; border-top: 1px solid var(--border); padding: 60px 5%; margin-top: 80px; text-align: center; color: #555; }
+        .form-group { margin-bottom: 20px; width: 100%; }
+        .form-control { width: 100%; padding: 15px; background: #0a0a0f; border: 1px solid var(--border); color: #fff; border-radius: 6px; font-family: inherit; font-size: 1.1rem; transition: 0.3s; }
+        .form-control:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 8px var(--glow); }
+
+        /* เครื่องมือนักเขียนแบบเต็มพิกัด (Full Toolbar) */
+        .editor-toolbar { background: #0a0a0f; border: 1px solid var(--border); border-bottom: none; border-radius: 6px 6px 0 0; padding: 12px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .editor-btn { background: #1a1a24; color: #aaa; border: 1px solid #333; border-radius: 4px; padding: 6px 10px; cursor: pointer; font-family: inherit; font-weight: bold; transition: 0.2s; font-size: 0.9rem;}
+        .editor-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+        .toolbar-divider { width: 1px; height: 24px; background: var(--border); margin: 0 5px; }
+        .editor-select { background: #1a1a24; color: #aaa; border: 1px solid #333; border-radius: 4px; padding: 6px; cursor: pointer; font-family: inherit; outline: none; }
+        .editor-color { padding: 0; width: 28px; height: 28px; border: 1px solid #333; border-radius: 4px; cursor: pointer; background: #1a1a24; }
+
+        .writer-editor { width: 100%; min-height: 450px; background: #0a0a0f; color: #fff; border: 1px solid var(--border); border-radius: 0 0 6px 6px; padding: 20px; font-size: 1.1rem; font-family: inherit; line-height: 1.7; overflow-y: auto; outline: none; transition: 0.3s; }
+        .writer-editor:focus { border-color: var(--accent); box-shadow: 0 0 10px var(--glow); }
+        .writer-editor[placeholder]:empty:before { content: attr(placeholder); color: #555; pointer-events: none; display: block; }
+        .writer-editor img { max-width: 100%; height: auto; border-radius: 8px; margin: 10px 0; }
+
+        /* ========================================= */
+        /* 📖 READER VIEW */
+        /* ========================================= */
+        .reader-container { max-width: 800px; margin: auto; }
+        .reader-toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; background: var(--card-bg); padding: 15px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 25px; gap: 10px; }
+        .toolbar-group { display: flex; gap: 10px; align-items: center; }
+        .icon-btn { background: #222; color: #fff; border: 1px solid #444; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 1rem; transition: 0.2s; }
+        .icon-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+        .reader-content-box { background: var(--card-bg); padding: 40px; border-radius: 10px; border-top: 4px solid var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.5); word-wrap: break-word; }
+        .reader-text { font-size: 18px; line-height: 1.8; margin-top: 20px; transition: font-size 0.2s; }
+        .reader-text img { max-width: 100%; height: auto; border-radius: 8px; margin: 10px 0; }
+        .donate-box { background: #0a0a0f; border: 1px solid var(--accent); padding: 25px; border-radius: 10px; text-align: center; margin-top: 40px; }
+
+        /* FAQ & Footer */
+        .cta-banner { background: linear-gradient(135deg, rgba(229, 181, 57, 0.15), #0a0a0f); border: 1px solid var(--accent); border-radius: 12px; padding: 40px 20px; text-align: center; margin: 50px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .footer { background: #050508; border-top: 1px solid var(--border); padding: 50px 5% 20px; margin-top: 60px; text-align: center; color: #555; }
+
+        @media (max-width: 900px) {
+            .studio-layout { grid-template-columns: 1fr; }
+            .studio-menu { border-right: none; border-bottom: 1px solid var(--border); display: flex; overflow-x: auto; white-space: nowrap; padding: 10px; }
+            .studio-menu div { border-left: none; border-bottom: 3px solid transparent; padding: 10px 15px; }
+            .studio-menu div:hover, .studio-menu div.active { border-left-color: transparent; border-bottom-color: var(--accent); }
+        }
     </style>
 </head>
 <body>
@@ -92,63 +141,166 @@
     </nav>
 
     <div id="home-view" class="view-section active">
-        <div id="reading-bar" style="display: none; background: #0a0a0f; border-left: 4px solid var(--accent); padding: 15px 25px; border-radius: 8px; margin-bottom: 30px; justify-content: space-between; align-items: center;">
-            <div><span style="color: #666; font-size: 0.8rem;">กำลังอ่านค้างไว้:</span><br><strong id="reading-title" style="color: var(--accent);"></strong></div>
+        <div id="continue-reading-section" style="display: none; background: #0a0a0f; border-left: 4px solid var(--accent); padding: 18px 25px; border-radius: 8px; margin-bottom: 25px; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+            <div><span style="color: #888; font-size: 0.85rem;">อ่านค้างไว้:</span><br><strong id="last-read-title" style="color: var(--accent); font-size: 1.15rem;">-</strong></div>
             <button class="btn btn-primary" onclick="resumeReading()">อ่านต่อ ▶</button>
         </div>
 
         <div class="home-grid">
             <div>
-                <h2 class="section-title">✨ ตำนานบทใหม่ <span>(ข้อมูลจริง)</span></h2>
-                <div class="novel-grid" id="novel-list">
-                    <p style="color: #444; padding: 20px;">กำลังเปิดหอสมุด...</p>
+                <h2 class="section-title">🔥 นิยายจากฐานข้อมูลจริง <span>ดูทั้งหมด ></span></h2>
+                <div class="novel-grid" id="real-novel-list">
+                    <p style="color: #444; padding: 20px;">กำลังเชื่อมต่อหอสมุดเวทมนตร์...</p>
+                </div>
+                
+                <div class="cta-banner">
+                    <h2 style="color: var(--accent); font-family: 'Cinzel', serif; margin-top: 0;">เขียนจินตนาการของคุณให้เป็นจริง</h2>
+                    <p style="color: #aaa; margin-bottom: 20px;">Fantasy Realm สนับสนุนนักเขียนอย่างเต็มรูปแบบ คุณคุมลิขสิทธิ์ 100% รับรายได้ 100%</p>
+                    <button class="btn btn-primary" style="padding: 12px 30px; font-size: 1.1rem;" onclick="switchView('studio-view')">เริ่มเขียนนิยายเลยตอนนี้</button>
                 </div>
             </div>
+
             <div>
                 <div class="sidebar-box">
-                    <h3 style="color: var(--accent); margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 10px;">🏆 อันดับตำนาน</h3>
+                    <h3 style="margin-top: 0; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 12px;">🏆 อันดับตำนาน</h3>
                     <div id="ranking-list"></div>
                 </div>
+
                 <div class="sidebar-box">
-                    <h3 style="margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 10px;">⏱️ อัปเดตล่าสุด</h3>
-                    <div id="updates-list"></div>
+                    <h3 style="margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 12px;">⏱️ อัปเดตล่าสุด</h3>
+                    <div id="latest-updates-list"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <div id="studio-view" class="view-section">
-        <h2 style="color: var(--accent);">✍️ จารึกตำนานใหม่</h2>
-        <input type="text" id="post-title" style="width: 100%; padding: 15px; background: #0a0a0f; border: 1px solid var(--border); border-radius: 8px; color: white; margin-bottom: 20px; font-size: 1.2rem; outline: none;" placeholder="ชื่อเรื่องนิยายของคุณ...">
-        
-        <div class="editor-container">
-            <div class="editor-toolbar">
-                <button class="toolbar-btn" onclick="formatDoc('bold')">B</button>
-                <button class="toolbar-btn" onclick="formatDoc('italic')">I</button>
-                <button class="toolbar-btn" onclick="formatDoc('underline')">U</button>
-                <button class="toolbar-btn" onclick="insertImage()">🖼️ ภาพ</button>
-                <button class="toolbar-btn" onclick="formatDoc('foreColor', '#e5b539')">🎨 สีทอง</button>
+        <h2 style="color: var(--accent); margin-top: 0; font-family: 'Cinzel', serif;">⚙️ ระบบจัดการหลังบ้าน</h2>
+        <div class="studio-layout">
+            <div class="studio-menu">
+                <div class="active" onclick="switchStudioTab('tab-write', this)">✍️ จารึกตำนานใหม่</div>
+                <div onclick="switchStudioTab('tab-novels', this)">📚 นิยายของฉัน</div>
+                <div onclick="switchStudioTab('tab-money', this)">💰 ช่องทางรับเงิน</div>
             </div>
-            <div id="post-editor" class="writer-editor" contenteditable="true" placeholder="เริ่มร่ายเวทมนตร์ผ่านตัวอักษรที่นี่..."></div>
+            
+            <div class="studio-content">
+                <div id="tab-write" class="studio-tab active">
+                    <h3 style="margin-top: 0;">เริ่มสร้างสรรค์เนื้อหา</h3>
+                    <div class="form-group"><input type="text" id="novel-title" class="form-control" placeholder="ชื่อเรื่องนิยายของคุณ..."></div>
+                    
+                    <div class="form-group" style="background: #111; padding: 10px 15px; border-radius: 5px; border-left: 3px solid var(--danger);">
+                        <label style="color: #fff; cursor: pointer; display: flex; align-items: center; gap: 10px; margin: 0;">
+                            <input type="checkbox" style="width: 18px; height: 18px;"> นิยายเรื่องนี้มีเนื้อหา 18+
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #888; margin-bottom: 10px;">
+                            <div><strong>จำนวนคำ: </strong> <span id="word-count" style="color: var(--accent);">0</span> คำ</div>
+                        </div>
+
+                        <div class="editor-toolbar">
+                            <button class="editor-btn" onclick="formatDoc('undo')" title="เลิกทำ (Undo)">↩️</button>
+                            <button class="editor-btn" onclick="formatDoc('redo')" title="ทำซ้ำ (Redo)">↪️</button>
+                            <span class="toolbar-divider"></span>
+
+                            <select class="editor-select" onchange="formatDoc('formatBlock', this.value); this.selectedIndex=0;" title="รูปแบบหัวข้อ">
+                                <option value="" selected hidden>หัวข้อ / ย่อหน้า</option>
+                                <option value="H1">📌 หัวข้อใหญ่สุด (H1)</option>
+                                <option value="H2">📌 หัวข้อรอง (H2)</option>
+                                <option value="H3">📌 หัวข้อย่อย (H3)</option>
+                                <option value="P">📝 เนื้อหาปกติ (P)</option>
+                            </select>
+                            <span class="toolbar-divider"></span>
+
+                            <button class="editor-btn" onclick="formatDoc('bold')" title="ตัวหนา"><b>B</b></button>
+                            <button class="editor-btn" onclick="formatDoc('italic')" title="ตัวเอียง"><i>I</i></button>
+                            <button class="editor-btn" onclick="formatDoc('underline')" title="ขีดเส้นใต้"><u>U</u></button>
+                            <button class="editor-btn" onclick="formatDoc('strikeThrough')" title="ขีดฆ่า"><s>S</s></button>
+                            <span class="toolbar-divider"></span>
+
+                            <button class="editor-btn" onclick="formatDoc('justifyLeft')" title="ชิดซ้าย">⬅️</button>
+                            <button class="editor-btn" onclick="formatDoc('justifyCenter')" title="กึ่งกลาง">↔️</button>
+                            <button class="editor-btn" onclick="formatDoc('justifyRight')" title="ชิดขวา">➡️</button>
+                            <span class="toolbar-divider"></span>
+                            
+                            <button class="editor-btn" onclick="formatDoc('insertUnorderedList')" title="บุลเล็ต">●</button>
+                            <button class="editor-btn" onclick="formatDoc('insertOrderedList')" title="ตัวเลข">1.</button>
+                            <span class="toolbar-divider"></span>
+
+                            <div style="display: flex; align-items: center; gap: 5px;" title="สีตัวอักษร">
+                                🎨 <input type="color" class="editor-color" onchange="formatDoc('foreColor', this.value)">
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 5px;" title="สีพื้นหลังข้อความ">
+                                🖍️ <input type="color" class="editor-color" onchange="formatDoc('hiliteColor', this.value)" value="#e5b539">
+                            </div>
+                            <span class="toolbar-divider"></span>
+
+                            <button class="editor-btn" onclick="insertLink()" title="แทรกลิงก์">🔗</button>
+                            <button class="editor-btn" onclick="insertImage()" title="แทรกรูปภาพ">🖼️ ภาพ</button>
+                            <button class="editor-btn" onclick="formatDoc('insertHorizontalRule')" title="แทรกเส้นคั่น">➖</button>
+                            <span class="toolbar-divider"></span>
+
+                            <button class="editor-btn" onclick="formatDoc('removeFormat')" title="ล้างการจัดรูปแบบ" style="color: var(--danger); border-color: var(--danger);">❌</button>
+                        </div>
+                        <div id="novel-editor" class="writer-editor" contenteditable="true" placeholder="เริ่มร่ายเวทมนตร์ผ่านตัวอักษรที่นี่... ข้อมูลจะบันทึกลง Firebase จริง"></div>
+                    </div>
+                    
+                    <button class="btn btn-primary" id="publish-btn" style="padding: 10px 30px; font-size: 1.1rem;" onclick="publishToFirebase()">✨ เผยแพร่ลงฐานข้อมูล</button>
+                </div>
+
+                <div id="tab-novels" class="studio-tab">
+                    <h3 style="margin-top: 0;">นิยายทั้งหมดของฉัน</h3>
+                    <div style="background: #111; padding: 15px; border-radius: 5px; color: #888;">คุณยังไม่มีนิยายในระบบ (ระบบจะดึงข้อมูลจริงในอนาคต)</div>
+                </div>
+
+                <div id="tab-money" class="studio-tab">
+                    <h3 style="margin-top: 0;">ตั้งค่าการรับโดเนท (0% Fee)</h3>
+                    <div class="form-group"><label style="color:#aaa; display:block; margin-bottom:5px;">ลิงก์พร้อมเพย์ / PromptPay</label><input type="text" class="form-control" placeholder="08x-xxx-xxxx"></div>
+                    <div class="form-group"><label style="color:#aaa; display:block; margin-bottom:5px;">ลิงก์สนับสนุน (Patreon / Ko-fi)</label><input type="text" class="form-control" placeholder="https://..."></div>
+                    <button class="btn btn-primary">บันทึกข้อมูลการรับเงิน</button>
+                </div>
+            </div>
         </div>
-        
-        <button class="btn btn-primary" style="margin-top: 25px; padding: 12px 40px;" id="save-btn" onclick="publishNovel()">✨ เผยแพร่ลงฐานข้อมูล</button>
     </div>
 
     <div id="reader-view" class="view-section">
-        <button class="btn btn-outline" onclick="switchView('home-view')">⬅ กลับหน้าหลัก</button>
-        <div class="reader-box">
-            <h1 id="view-title" style="color: var(--accent); text-align: center; font-family: 'Cinzel', serif; font-size: 2.5rem; margin-bottom: 10px;"></h1>
-            <p id="view-author" style="text-align: center; color: #888; margin-bottom: 40px;"></p>
-            <div id="view-content" style="font-size: 1.25rem; white-space: pre-wrap;"></div>
+        <div class="reader-container">
+            <button class="btn btn-outline" onclick="switchView('home-view')" style="margin-bottom: 20px;">⬅ กลับหน้าหลัก</button>
+            <div class="reader-toolbar">
+                <div class="toolbar-group">
+                    <button class="icon-btn" onclick="changeFontSize(-2)">A-</button>
+                    <button class="icon-btn" onclick="changeFontSize(2)">A+</button>
+                </div>
+                <div class="toolbar-group">
+                    <button class="icon-btn" onclick="setTheme('dark')" title="โหมดมืด">🌙</button>
+                    <button class="icon-btn" style="background: #e8dcb8; color:#000;" onclick="setTheme('sepia')" title="ถนอมสายตา">📜</button>
+                    <button class="icon-btn" style="background: #fff; color:#000;" onclick="setTheme('light')" title="โหมดสว่าง">☀️</button>
+                </div>
+            </div>
+            <div class="reader-content-box">
+                <h2 id="reader-title" style="color: var(--accent); text-align: center; margin-top: 0; font-family: 'Cinzel', serif; font-size: 2rem;">ชื่อเรื่อง</h2>
+                <p id="reader-author" style="text-align: center; color: #888; margin-top: -10px;"></p>
+                <div id="reader-content" class="reader-text"></div>
+                
+                <div class="donate-box">
+                    <h3 style="color: var(--accent); margin-top: 0;">💖 สนับสนุนนักเขียนโดยตรง</h3>
+                    <p style="font-size: 0.95rem; color: #aaa;">รายได้ 100% เข้ากระเป๋านักเขียน</p>
+                    <button class="btn btn-primary" onclick="alert('ระบบกำลังแสดงช่องทางโดเนท...')">สนับสนุนนักเขียน</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <footer class="footer">
-        &copy; 2026 Fantasy Realm V2 | อาณาจักรที่ยุติธรรมที่สุดสำหรับนักเขียน
+        <div style="font-family: 'Cinzel', serif; color: var(--accent); font-size: 1.5rem; margin-bottom: 10px;">Fantasy Realm V2</div>
+        &copy; 2026 ขับเคลื่อนด้วย Firebase ของจริง 100%
     </footer>
 
     <script>
+        // =========================================
+        // 🔑 1. CONFIG: เชื่อมต่อ Firebase (รหัสจริงจาก Fantasy-Realm-V2)
+        // =========================================
         const firebaseConfig = {
             apiKey: "AIzaSyBxHbbY6BmA8j9jpA3CLeODnwSGT6iiA2s",
             authDomain: "fantasy-realm-v2.firebaseapp.com",
@@ -164,122 +316,164 @@
         const db = firebase.firestore();
         const provider = new firebase.auth.GoogleAuthProvider();
 
-        let userAccount = null;
+        let loggedInUser = null;
 
-        function loginWithGoogle() { auth.signInWithPopup(provider).catch(e => alert(e.message)); }
+        // =========================================
+        // 🚀 AUTH: ระบบล็อกอิน
+        // =========================================
+        function loginWithGoogle() { auth.signInWithPopup(provider).catch(err => alert("เกิดข้อผิดพลาด: " + err.message)); }
         function logout() { auth.signOut(); }
 
         auth.onAuthStateChanged((user) => {
-            userAccount = user;
+            loggedInUser = user;
             const authUI = document.getElementById('auth-ui');
             if (user) {
                 authUI.innerHTML = `
                     <div class="user-profile">
-                        <img src="${user.photoURL}" class="user-avatar">
+                        <img src="${user.photoURL}" class="user-avatar" onerror="this.src='https://via.placeholder.com/40'">
                         <span style="color:var(--accent); font-weight:bold;">${user.displayName}</span>
-                        <button class="btn btn-outline" onclick="switchView('studio-view')">สตูดิโอ</button>
+                        <button class="btn btn-outline" onclick="switchView('studio-view')">จัดการนิยาย (Studio)</button>
                         <button class="btn btn-outline" onclick="logout()" style="border:none; color:#666; font-size:0.8rem;">[ออก]</button>
                     </div>
                 `;
+                checkLastRead();
             } else {
                 authUI.innerHTML = `<button class="btn btn-primary" onclick="loginWithGoogle()">🔑 ล็อกอิน Gmail จริง</button>`;
                 switchView('home-view');
             }
         });
 
-        async function publishNovel() {
-            const title = document.getElementById('post-title').value;
-            const content = document.getElementById('post-editor').innerHTML;
-            const btn = document.getElementById('save-btn');
-            if (!userAccount) return alert("กรุณาล็อกอินก่อน!");
-            if (!title || content === "") return alert("กรุณากรอกข้อมูลให้ครบ!");
+        // =========================================
+        // 💾 FIRESTORE: บันทึกและดึงข้อมูล
+        // =========================================
+        async function publishToFirebase() {
+            const title = document.getElementById('novel-title').value.trim();
+            const content = document.getElementById('novel-editor').innerHTML.trim();
+            const btn = document.getElementById('publish-btn');
+
+            if(!loggedInUser) return alert("กรุณาล็อกอินก่อนจารึกตำนาน!");
+            if(!title || content === "") return alert("กรุณาระบุชื่อเรื่องและเนื้อหา!");
+
             btn.innerText = "กำลังจารึกข้อมูล...";
             btn.disabled = true;
+
             try {
                 await db.collection("novels-v2").add({
                     title: title,
                     content: content,
-                    author: userAccount.displayName,
+                    author: loggedInUser.displayName,
+                    uid: loggedInUser.uid,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                alert("✨ สำเร็จ!");
-                document.getElementById('post-title').value = "";
-                document.getElementById('post-editor').innerHTML = "";
+                alert("✨ จารึกตำนานบทใหม่สำเร็จแล้ว!");
+                document.getElementById('novel-title').value = "";
+                document.getElementById('novel-editor').innerHTML = "";
+                document.getElementById('word-count').innerText = "0";
                 switchView('home-view');
-            } catch (e) { alert(e.message); } finally {
-                btn.innerText = "✨ เผยแพร่ลงฐานข้อมูล";
-                btn.disabled = false;
+            } catch(e) { 
+                alert("ผิดพลาด: " + e.message); 
+            } finally { 
+                btn.innerText = "✨ เผยแพร่ลงฐานข้อมูล"; btn.disabled = false; 
             }
         }
 
-        db.collection("novels-v2").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
-            const list = document.getElementById('novel-list');
-            const ranking = document.getElementById('ranking-list');
-            const updates = document.getElementById('updates-list');
-            list.innerHTML = ""; ranking.innerHTML = ""; updates.innerHTML = "";
-            if (snapshot.empty) {
-                list.innerHTML = "<p style='color:#555;'>ยังไม่มีใครเขียนตำนาน...</p>";
+        db.collection("novels-v2").orderBy("timestamp", "desc").onSnapshot((querySnapshot) => {
+            const novelGrid = document.getElementById('real-novel-list');
+            const sidebarUpdates = document.getElementById('latest-updates-list');
+            const rankingList = document.getElementById('ranking-list');
+            
+            novelGrid.innerHTML = ""; sidebarUpdates.innerHTML = ""; rankingList.innerHTML = "";
+
+            if (querySnapshot.empty) {
+                novelGrid.innerHTML = "<p style='color:#555;'>ยังไม่มีใครเขียนตำนาน เริ่มเป็นคนแรกเลย!</p>";
                 return;
             }
-            let rank = 1;
-            snapshot.forEach((doc) => {
+
+            let count = 1;
+            querySnapshot.forEach((doc) => {
                 const data = doc.data();
+                
+                // การ์ดหน้าแรก
                 const card = document.createElement('div');
                 card.className = 'novel-card';
                 card.onclick = () => openReader(data.title, data.content, data.author);
-                card.innerHTML = `<div class="cover">📖 READ</div><div class="info"><h4>${data.title}</h4><small>โดย ${data.author}</small></div>`;
-                list.appendChild(card);
+                card.innerHTML = `
+                    <div class="cover">📖 NO IMAGE</div>
+                    <div class="info">
+                        <h4 style="margin:0 0 5px 0;">${data.title}</h4>
+                        <small style="color:var(--accent)">โดย ${data.author}</small>
+                    </div>
+                `;
+                novelGrid.appendChild(card);
 
-                const item = document.createElement('div');
-                item.className = 'sidebar-item';
-                item.onclick = () => openReader(data.title, data.content, data.author);
-                item.innerHTML = `📜 ${data.title} <br><small style="color:#555;">โดย ${data.author}</small>`;
-                updates.appendChild(item);
+                // อัปเดต Sidebar (คลิกได้)
+                const updateItem = document.createElement('div');
+                updateItem.className = 'sidebar-list-item';
+                updateItem.onclick = () => openReader(data.title, data.content, data.author);
+                updateItem.innerHTML = `📜 ${data.title} <br><small style="color:#555;">โดย ${data.author}</small>`;
+                sidebarUpdates.appendChild(updateItem);
 
-                if(rank <= 3) {
-                    const rItem = document.createElement('div');
-                    rItem.className = 'sidebar-item';
-                    rItem.onclick = () => openReader(data.title, data.content, data.author);
-                    rItem.innerHTML = `<strong style="color:var(--accent)">${rank}.</strong> ${data.title}`;
-                    ranking.appendChild(rItem);
-                    rank++;
+                // อันดับ Sidebar (คลิกได้)
+                if(count <= 3) {
+                    const rankItem = document.createElement('div');
+                    rankItem.className = 'sidebar-list-item';
+                    rankItem.onclick = () => openReader(data.title, data.content, data.author);
+                    rankItem.innerHTML = `<strong style="color:var(--accent)">${count}.</strong> ${data.title}`;
+                    rankingList.appendChild(rankItem);
+                    count++;
                 }
             });
         });
 
+        // =========================================
+        // ⚙️ SYSTEM CORE
+        // =========================================
         function switchView(id) {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             window.scrollTo(0,0);
+            if(id === 'home-view') checkLastRead();
+        }
+
+        function switchStudioTab(tabId, element) {
+            document.querySelectorAll('.studio-menu div').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.studio-tab').forEach(tab => tab.classList.remove('active'));
+            element.classList.add('active'); document.getElementById(tabId).classList.add('active');
         }
 
         function openReader(t, c, a) {
-            document.getElementById('view-title').innerText = t;
-            document.getElementById('view-author').innerText = "จารึกโดย: " + a;
-            document.getElementById('view-content').innerHTML = c;
+            document.getElementById('reader-title').innerText = t;
+            document.getElementById('reader-author').innerText = "จารึกโดย: " + a;
+            document.getElementById('reader-content').innerHTML = c;
             switchView('reader-view');
             localStorage.setItem('lastRead_v2', JSON.stringify({title: t, content: c, author: a}));
-            checkReadingHistory();
         }
 
-        function checkReadingHistory() {
-            const history = JSON.parse(localStorage.getItem('lastRead_v2'));
-            const bar = document.getElementById('reading-bar');
-            if(history) {
-                bar.style.display = 'flex';
-                document.getElementById('reading-title').innerText = history.title;
-            }
+        function checkLastRead() {
+            const lr = JSON.parse(localStorage.getItem('lastRead_v2'));
+            const crs = document.getElementById('continue-reading-section');
+            if(lr && loggedInUser && document.getElementById('home-view').classList.contains('active')) {
+                crs.style.display = 'flex';
+                document.getElementById('last-read-title').innerText = lr.title;
+            } else { crs.style.display = 'none'; }
         }
 
-        function resumeReading() {
-            const h = JSON.parse(localStorage.getItem('lastRead_v2'));
-            if(h) openReader(h.title, h.content, h.author);
-        }
+        function resumeReading() { const lr = JSON.parse(localStorage.getItem('lastRead_v2')); if(lr) openReader(lr.title, lr.content, lr.author); }
 
-        function formatDoc(cmd, val=null) { document.execCommand(cmd, false, val); document.getElementById('post-editor').focus(); }
-        function insertImage() { const url = prompt("ใส่ URL รูปภาพ:"); if(url) formatDoc('insertImage', url); }
+        // เครื่องมือจัดหน้า & สี
+        let currentFontSize = 18;
+        function changeFontSize(c) { currentFontSize = Math.max(12, Math.min(32, currentFontSize + c)); document.getElementById('reader-content').style.fontSize = currentFontSize + 'px'; }
+        function setTheme(t) { document.body.className = t === 'dark' ? '' : 'theme-' + t; }
 
-        window.onload = checkReadingHistory;
+        function formatDoc(cmd, val=null) { document.execCommand(cmd, false, val); document.getElementById('novel-editor').focus(); }
+        function insertLink() { let url = prompt("ใส่ URL:"); if(url) formatDoc('createLink', url); }
+        function insertImage() { let url = prompt("ใส่ URL รูปภาพ:"); if(url) formatDoc('insertImage', url); }
+
+        // นับคำ
+        document.getElementById('novel-editor').addEventListener('input', function() {
+            const text = this.innerText.trim();
+            document.getElementById('word-count').innerText = text === '' ? 0 : text.split(/\s+/).length;
+        });
     </script>
 </body>
 </html>
